@@ -1,0 +1,25 @@
+name:                   not-found
+version:                0.1.0.0
+synopsis:               Functions, mostly one-liners, that aren't in base.
+description:
+  Functions, mostly one-liners, that aren't in base, but make life easier.
+homepage:               https://github.com/trskop/hs-not-found
+license:                BSD3
+license-file:           LICENSE
+author:                 Peter Trško
+maintainer:             peter.trsko@gmail.com
+copyright:              (c) 2011 - 2013 Peter Trško
+category:               Control
+build-type:             Simple
+cabal-version:          >=1.8
+
+library
+  exposed-modules:
+      Control.Applicative.LiftUtils
+    , Control.Applicative.Predicate
+    , Control.Monad.Conditional
+    , Data.Functor.Utils
+  -- other-modules:
+  build-depends:       base ==4.5.*
+  hs-source-dirs:      src
+  ghc-options:         -Wall
