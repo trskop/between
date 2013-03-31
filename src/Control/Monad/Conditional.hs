@@ -21,7 +21,7 @@ module Control.Monad.Conditional
 
     -- * Maybe
     , whenJust
-    , whenLeftM
+    , whenJustM
     , whenNothing
     , whenNothingM
 
@@ -33,6 +33,8 @@ module Control.Monad.Conditional
     -- some cases.
     , whenEmpty
     , whenEmptyM
+    , unlessEmpty
+    , unlessEmptyM
     )
     where
 
