@@ -36,7 +36,7 @@ module Control.Monad.Conditional
     )
     where
 
-import Data.Monoid (Monoid(mzero))
+import Data.Monoid (Monoid(mempty))
 
 
 -- {{{ Either -----------------------------------------------------------------
