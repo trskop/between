@@ -19,25 +19,39 @@ module Control.Applicative.LiftUtils
     -- functor.
       fromEitherA
 
-    -- ** Examples
-    --
-    -- $eitherExamples
-
-    -- ** Cheet Sheet
-    --
-    -- $eitherCheetSheet
-
     -- * Maybe
 
     -- | Deconstructing 'Maybe' and lifting the result to 'Applicative'
     -- functor.
     , fromMaybeA
 
-    -- ** Examples
+    -- * Cheet Sheet
     --
-    -- $maybeExamples
+    -- | This list provides quick reference of some basic ideas how
+    -- 'fromEitherA' and 'fromMaybeA' can be used.  More important then the
+    -- code is the type. Code provides proof that function with such type
+    -- exists.
+    --
+    -- Some notes before we start:
+    --
+    -- * @def@ is a method of @Default@ class from /data-default/ package
+    --   <http://hackage.haskell.org/package/data-default>.
+    --
+    -- * @ErrorT@ can be found, among others, in /transformers/ package
+    --   <http://hackage.haskell.org/package/transformers>.
+    --
+    -- * @MaybeT@ can be found in /transformers/ package
+    --   <http://hackage.haskell.org/package/transformers> and few others as
+    --   well.
+    --
+    -- * Whenever there is a 'Monad' constraint, in the code below, you can use
+    --   'return' instead of 'pure' without changing class constraints.
 
-    -- ** Cheet Sheet
+    -- ** Either
+    --
+    -- $eitherCheetSheet
+
+    -- ** Maybe
     --
     -- $maybeCheetSheet
 
@@ -87,32 +101,69 @@ fromMaybeA x y = case y of
 
 -- {{{ Documentation ----------------------------------------------------------
 
--- $eitherExamples
---
--- TODO
-
 -- $eitherCheetSheet
 --
--- TODO
-
--- $maybeExamples
+-- > fromEitherA (const mzero)
+-- >    :: (Applicative f, MonadPlus f) => Either a b -> f b
 --
--- TODO
+-- > (\ f -> fromEitherA (pure . f))
+-- >    :: Applicative f => (a -> b) -> Either a b -> f b
+--
+-- > (\ x -> fromEitherA (\ _ -> pure x))
+-- >    :: Applicative f => b -> Either a b -> f b
+--
+-- > fromEitherA (\ _ -> pure def)
+-- >     :: (Applicative f, Default b) => Either a b -> f b
+--
+-- > (>>= fromEitherA (\ _ -> pure def))
+-- >     :: (Applicative m, Default b, Monad m) => m (Either a b) -> m b
+--
+-- > fromEitherA (\ _ -> pure mempty)
+-- >     :: (Applicative f, Monoid b) => Either a b -> f b
+--
+-- > (>>= fromEitherA (\ _ -> pure mempty))
+-- >     :: (Applicative m, Monad m, Monoid b) => m (Either a b) -> m b
+--
+-- > (\ f -> runErrorT >=> fromEitherA f)
+-- >     :: (Applicative m, Monad m)
+-- >     => (e -> m a)
+-- >     -> ErrorT e m a
+-- >     -> m a
+--
+-- > (\ f -> runErrorT >=> fromEitherA f)
+-- >     :: (Applicative m, Monad m)
+-- >     => (e -> m a)
+-- >     -> ErrorT e m a
+-- >     -> m a
+--
+-- > (\ f -> runErrorT >=> fromEitherA (throw . f))
+-- >     :: (Applicative m, Exception e', Monad m)
+-- >     => (e -> e')
+-- >     -> ErrorT e m a
+-- >     -> m a
+--
+-- > (\ e -> runErrorT >=> fromEitherA (const $ throw e))
+-- >     :: (Applicative m, Exception e, Monad m)
+-- >     => e
+-- >     -> ErrorT e' m a
+-- >     -> m a
 
 -- $maybeCheetSheet
 --
+-- This list provides quick reference of some basic ideas how 'fromMaybeA' can
+-- be used.
+--
 -- > fromMaybeA mzero
 -- >     :: (Applicative m, MonadPlus m) => Maybe a -> f a
--- >
+--
 -- > (>>= fromMaybeA mzero)
 -- >     :: (Applicative m, MonadPlus m)
 -- >     => m (Maybe a)
 -- >     -> m a
 --
--- > -- def is a method of Default class from data-default package.
 -- > fromMaybeA (pure def)
 -- >     :: (Applicative f, Default a) => Maybe a -> f a
--- >
+--
 -- > (>>= fromMaybeA (pure def))
 -- >     :: (Applicative m, Default a, Monad m)
 -- >     => m (Maybe a)
@@ -120,24 +171,22 @@ fromMaybeA x y = case y of
 --
 -- > fromMaybeA (pure mempty)
 -- >     :: (Applicative f, Monoid a) => Maybe a -> f a
--- >
--- > -- You can use return instead of pure without changing class constraints.
+--
 -- > (>>= fromMaybeA (pure mempty))
 -- >     :: (Applicative m, Monad m, Monoid a)
 -- >     => m (Maybe a)
 -- >     -> m a
 --
 -- > fromMaybeA (throw myException) :: Applicative f => Maybe a -> f a
--- >
+--
 -- > (>>= fromMaybeA (throw myException))
 -- >     :: (Applicative m, Monad m)
 -- >     => m (Maybe a)
 -- >     -> m a
 --
--- > -- MaybeT can be found in transformers package and few others.
 -- > \ x -> runMaybeT >=> fromMaybeA x
 -- >     :: (Applicative m, Monad m) => m a -> MaybeT m a -> m a
--- >
+--
 -- > \ e -> runMaybeT >=> fromMaybeA (throw e)
 -- >     :: (Applicative m, Exception e, Monad m) => e -> MaybeT m a -> m a
 
