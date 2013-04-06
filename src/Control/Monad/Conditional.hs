@@ -89,7 +89,7 @@ whenEmpty x f
   | otherwise = return ()
 
 whenEmptyM :: (Eq a, Monad m, Monoid a) => m a -> m () -> m ()
-whenEmptyM x f = (x >>= (`whenEmpty` f))
+whenEmptyM x f = x >>= (`whenEmpty` f)
 
 unlessEmpty :: (Eq a, Monad m, Monoid a) => a -> (a -> m ()) -> m ()
 unlessEmpty x f
@@ -97,6 +97,6 @@ unlessEmpty x f
   | otherwise = f x
 
 unlessEmptyM :: (Eq a, Monad m, Monoid a) => m a -> (a -> m ()) -> m ()
-unlessEmptyM x f = (x >>= (`unlessEmpty` f))
+unlessEmptyM x f = x >>= (`unlessEmpty` f)
 
 -- }}} Monoid -----------------------------------------------------------------
