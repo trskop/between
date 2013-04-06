@@ -4,12 +4,11 @@
 -- Copyright   :  (c) 2011, 2013 Peter Trsko
 -- License     :  BSD3
 --
--- Maintainer  :  dogmat@gmail.com
+-- Maintainer  :  peter.trsko@gmail.com
 -- Stability   :  provisional
 -- Portability :  portable
 --
 -- Utility functions for Functors.
---
 module Data.Functor.Utils
     (
       (<$>)
@@ -40,7 +39,7 @@ infixl 4 <$$>
 infixl 4 $>
 {-# INLINE ($>) #-}
 
--- | Like @\ x f -> f '<*>' 'pure' x@, but does not have 'Applicative'
+-- | Like @\\ x f -> f '<*>' 'pure' x@, but does not have 'Applicative'
 -- constraint. Flipped version of '<#>'.
 --
 -- Implemented as: @x <##> f = ('$' x) '<$>' f@.
@@ -49,7 +48,7 @@ x <##> f = ($ x) `fmap` f
 infixl 4 <##>
 {-# INLINE (<##>) #-}
 
--- Like @\ f x -> f '<*>' 'pure' x@, but does not have 'Applicative'
+-- | Like @\\ f x -> f '<*>' 'pure' x@, but does not have 'Applicative'
 -- constraint.
 --
 -- Implemented as: @f <#> x = ('$' x) '<$>' f@.
