@@ -17,18 +17,19 @@ module Control.Applicative.LiftUtils
 
     -- | Deconstructing 'Either' and lifting the result to 'Applicative'
     -- functor.
-      fromEitherA
+      liftEitherA
 
     -- * Maybe
 
     -- | Deconstructing 'Maybe' and lifting the result to 'Applicative'
     -- functor.
     , fromMaybeA
+    , liftMaybeA
 
     -- * Cheet Sheet
     --
     -- | This list provides quick reference of some basic ideas how
-    -- 'fromEitherA' and 'fromMaybeA' can be used.  More important then the
+    -- 'liftEitherA' and 'liftMaybeA' can be used.  More important then the
     -- code is the type. Code provides proof that function with such type
     -- exists.
     --
@@ -69,12 +70,12 @@ import Control.Applicative
 --
 -- @(\\ f y -> case y of {'Left' x -> f x; 'Right' z -> 'pure' z})
 --     :: 'Applicative' f => (t -> f a) -> 'Either' t a -> f a@
-fromEitherA
+liftEitherA
     :: (Applicative f)
     => (a -> f b)
     -> Either a b
     -> f b
-fromEitherA f x = case x of
+liftEitherA f x = case x of
     Left y -> f y
     Right z -> pure z
 {-# INLINE fromEitherA #-}
@@ -85,17 +86,36 @@ fromEitherA f x = case x of
 
 -- | Shorthand for:
 --
--- @(\\ x y -> case y of {'Nothing' -> x; 'Just' z -> 'pure' z})
+-- @(\\ x y -> 'pure' $ case y of {'Nothing' -> x; 'Just' z -> z})
+--    :: 'Applicative' f => f a -> 'Maybe' a -> f a@
+--
+-- or
+--
+-- @('pure' .) . 'fromMaybe'
 --    :: 'Applicative' f => f a -> 'Maybe' a -> f a@
 fromMaybeA
+    :: (Applicative f)
+    => a
+    -> Maybe a
+    -> f a
+fromMaybeA x y = pure $ case y of
+    Nothing -> x
+    Just z -> z
+{-# INLINE fromMaybeA #-}
+
+-- | Shorthand for:
+--
+-- @(\\ x y -> case y of {'Nothing' -> x; 'Just' z -> 'pure' z})
+--    :: 'Applicative' f => f a -> 'Maybe' a -> f a@
+liftMaybeA
     :: (Applicative f)
     => f a
     -> Maybe a
     -> f a
-fromMaybeA x y = case y of
+liftMaybeA x y = case y of
     Nothing -> x
     Just z -> pure z
-{-# INLINE fromMaybeA #-}
+{-# INLINE liftMaybeA #-}
 
 -- {{{ Maybe ------------------------------------------------------------------
 
@@ -103,46 +123,46 @@ fromMaybeA x y = case y of
 
 -- $eitherCheetSheet
 --
--- > fromEitherA (const mzero)
+-- > liftEitherA (const mzero)
 -- >    :: (Applicative f, MonadPlus f) => Either a b -> f b
 --
--- > (\ f -> fromEitherA (pure . f))
+-- > (\ f -> liftEitherA (pure . f))
 -- >    :: Applicative f => (a -> b) -> Either a b -> f b
 --
--- > (\ x -> fromEitherA (\ _ -> pure x))
+-- > (\ x -> liftEitherA (\ _ -> pure x))
 -- >    :: Applicative f => b -> Either a b -> f b
 --
--- > fromEitherA (\ _ -> pure def)
+-- > liftEitherA (\ _ -> pure def)
 -- >     :: (Applicative f, Default b) => Either a b -> f b
 --
--- > (>>= fromEitherA (\ _ -> pure def))
+-- > (>>= liftEitherA (\ _ -> pure def))
 -- >     :: (Applicative m, Default b, Monad m) => m (Either a b) -> m b
 --
--- > fromEitherA (\ _ -> pure mempty)
+-- > liftEitherA (\ _ -> pure mempty)
 -- >     :: (Applicative f, Monoid b) => Either a b -> f b
 --
--- > (>>= fromEitherA (\ _ -> pure mempty))
+-- > (>>= liftEitherA (\ _ -> pure mempty))
 -- >     :: (Applicative m, Monad m, Monoid b) => m (Either a b) -> m b
 --
--- > (\ f -> runErrorT >=> fromEitherA f)
+-- > (\ f -> runErrorT >=> liftEitherA f)
 -- >     :: (Applicative m, Monad m)
 -- >     => (e -> m a)
 -- >     -> ErrorT e m a
 -- >     -> m a
 --
--- > (\ f -> runErrorT >=> fromEitherA f)
+-- > (\ f -> runErrorT >=> liftEitherA f)
 -- >     :: (Applicative m, Monad m)
 -- >     => (e -> m a)
 -- >     -> ErrorT e m a
 -- >     -> m a
 --
--- > (\ f -> runErrorT >=> fromEitherA (throw . f))
+-- > (\ f -> runErrorT >=> liftEitherA (throw . f))
 -- >     :: (Applicative m, Exception e', Monad m)
 -- >     => (e -> e')
 -- >     -> ErrorT e m a
 -- >     -> m a
 --
--- > (\ e -> runErrorT >=> fromEitherA (const $ throw e))
+-- > (\ e -> runErrorT >=> liftEitherA (const $ throw e))
 -- >     :: (Applicative m, Exception e, Monad m)
 -- >     => e
 -- >     -> ErrorT e' m a
@@ -150,44 +170,41 @@ fromMaybeA x y = case y of
 
 -- $maybeCheetSheet
 --
--- This list provides quick reference of some basic ideas how 'fromMaybeA' can
--- be used.
---
--- > fromMaybeA mzero
+-- > liftMaybeA mzero
 -- >     :: (Applicative m, MonadPlus m) => Maybe a -> f a
 --
--- > (>>= fromMaybeA mzero)
+-- > (>>= liftMaybeA mzero)
 -- >     :: (Applicative m, MonadPlus m)
 -- >     => m (Maybe a)
 -- >     -> m a
 --
--- > fromMaybeA (pure def)
+-- > liftMaybeA (pure def)
 -- >     :: (Applicative f, Default a) => Maybe a -> f a
 --
--- > (>>= fromMaybeA (pure def))
+-- > (>>= liftMaybeA (pure def))
 -- >     :: (Applicative m, Default a, Monad m)
 -- >     => m (Maybe a)
 -- >     -> m a
 --
--- > fromMaybeA (pure mempty)
+-- > liftMaybeA (pure mempty)
 -- >     :: (Applicative f, Monoid a) => Maybe a -> f a
 --
--- > (>>= fromMaybeA (pure mempty))
+-- > (>>= liftMaybeA (pure mempty))
 -- >     :: (Applicative m, Monad m, Monoid a)
 -- >     => m (Maybe a)
 -- >     -> m a
 --
--- > fromMaybeA (throw myException) :: Applicative f => Maybe a -> f a
+-- > liftMaybeA (throw myException) :: Applicative f => Maybe a -> f a
 --
--- > (>>= fromMaybeA (throw myException))
+-- > (>>= liftMaybeA (throw myException))
 -- >     :: (Applicative m, Monad m)
 -- >     => m (Maybe a)
 -- >     -> m a
 --
--- > \ x -> runMaybeT >=> fromMaybeA x
+-- > \ x -> runMaybeT >=> liftMaybeA x
 -- >     :: (Applicative m, Monad m) => m a -> MaybeT m a -> m a
 --
--- > \ e -> runMaybeT >=> fromMaybeA (throw e)
+-- > \ e -> runMaybeT >=> liftMaybeA (throw e)
 -- >     :: (Applicative m, Exception e, Monad m) => e -> MaybeT m a -> m a
 
 -- }}} Documentation ----------------------------------------------------------
