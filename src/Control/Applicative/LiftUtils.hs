@@ -78,7 +78,7 @@ liftEitherA
 liftEitherA f x = case x of
     Left y -> f y
     Right z -> pure z
-{-# INLINE fromEitherA #-}
+{-# INLINE liftEitherA #-}
 
 -- }}} Either -----------------------------------------------------------------
 
