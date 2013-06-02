@@ -42,7 +42,7 @@ infixl 4 $>
 -- | Like @\\ x f -> f '<*>' 'pure' x@, but does not have 'Applicative'
 -- constraint. Flipped version of '<#>'.
 --
--- Implemented as: @x <##> f = ('$' x) '<$>' f@.
+-- Implemented as: @x '<##>' f = ('$' x) '<$>' f@.
 (<##>) :: (Functor f) => a -> f (a -> b) -> f b
 x <##> f = ($ x) `fmap` f
 infixl 4 <##>
@@ -51,7 +51,7 @@ infixl 4 <##>
 -- | Like @\\ f x -> f '<*>' 'pure' x@, but does not have 'Applicative'
 -- constraint.
 --
--- Implemented as: @f <#> x = ('$' x) '<$>' f@.
+-- Implemented as: @f '<#>' x = ('$' x) '<$>' f@.
 --
 -- Example:
 --
