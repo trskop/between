@@ -33,7 +33,7 @@ newtype FlipT f a b = FlipT {fromFlipT :: f b a}
 
 instance Functor (FlipT Either a) where
     fmap f (FlipT (Left x))  = FlipT (Left (f x))
-    fmap f (FlipT (Right x)) = FlipT (Right x)
+    fmap _ (FlipT (Right x)) = FlipT (Right x)
 
 instance Functor (FlipT (,) a) where
     fmap f (FlipT (x, y)) = FlipT (f x, y)
