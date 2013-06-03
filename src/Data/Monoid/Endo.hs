@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -- |
 -- Module:       $HEADER$
 -- Description:  Utilities for Endo data type.
@@ -19,11 +20,19 @@ module Data.Monoid.Endo
 
     -- * Monoid
     , Monoid(..)
+#if MIN_VERSION_base(4,5,0)
     , (<>)
+#endif
     )
     where
 
-import Data.Monoid (Endo(..), Monoid(..), (<>))
+import Data.Monoid
+    ( Endo(..)
+    , Monoid(..)
+#if MIN_VERSION_base(4,5,0)
+    , (<>)
+#endif
+    )
 
 
 -- | Transform function wrapped in 'Endo'.

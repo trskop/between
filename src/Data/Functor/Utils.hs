@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -- |
 -- Module      :  $HEADER$
 -- Description :  Utility functions for Functors
@@ -11,9 +12,14 @@
 -- Utility functions for Functors.
 module Data.Functor.Utils
     (
+#if !MIN_VERSION_base(4,2,0)
+      Functor(..)
+    , (<$>)
+#else
       (<$>)
-    , (<$$>)
     , (<$)
+#endif
+    , (<$$>)
     , ($>)
 
     , (<#>)
@@ -21,9 +27,12 @@ module Data.Functor.Utils
     )
     where
 
--- Module Data.Functor was introduced in base 4.2.0.0 and therefore using this
--- instead.
+-- Module Data.Functor was introduced in base 4.2.0.0.
+#if MIN_VERSION_base(4,2,0)
+import Data.Functor (Functor(..), (<$>))
+#else
 import Control.Applicative ((<$), (<$>))
+#endif
 
 
 -- | Flipped version of '<$>', the naming convention comes from
