@@ -7,7 +7,7 @@
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  portable
+-- Portability:  non-portable (CPP)
 --
 -- Utilities for 'Endo' data type from "Data.Monoid" module.
 module Data.Monoid.Endo

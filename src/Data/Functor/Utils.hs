@@ -7,7 +7,7 @@
 --
 -- Maintainer  :  peter.trsko@gmail.com
 -- Stability   :  provisional
--- Portability :  portable
+-- Portability :  non-portable (CPP)
 --
 -- Utility functions for Functors.
 module Data.Functor.Utils
