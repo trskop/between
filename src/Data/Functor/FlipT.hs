@@ -16,7 +16,7 @@
 module Data.Functor.FlipT
     (
     -- * FlipT
-      FlipT(fromFlipT)
+      FlipT(FlipT, fromFlipT)
     , flipmap
     , (>$<)
 
