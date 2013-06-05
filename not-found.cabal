@@ -38,3 +38,7 @@ library
     ghc-options:        -fwarn-tabs
   if flag(pedantic)
     ghc-options:        -Werror
+
+source-repository head
+  type:                 git
+  location:             git://github.com/trskop/hs-not-found.git
