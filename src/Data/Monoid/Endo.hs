@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE FlexibleContexts #-}
 -- |
 -- Module:       $HEADER$
 -- Description:  Utilities for Endo data type.
@@ -7,7 +8,7 @@
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  non-portable (CPP)
+-- Portability:  non-portable (CPP, FlexibleContexts)
 --
 -- Utilities for 'Endo' data type from "Data.Monoid" module.
 module Data.Monoid.Endo
@@ -17,6 +18,7 @@ module Data.Monoid.Endo
     , runEndo
     , mapEndo
     , liftEndo
+    , flipLiftEndo
 
     -- * Monoid
     , Monoid(..)
@@ -34,6 +36,8 @@ import Data.Monoid
 #endif
     )
 
+import Data.Functor.FlipT (FlipT, flipmap)
+
 
 -- | Transform function wrapped in 'Endo'.
 mapEndo :: ((a -> a) -> (b -> b)) -> Endo a -> Endo b
@@ -45,6 +49,12 @@ mapEndo f (Endo g) = Endo (f g)
 liftEndo :: Functor f => Endo a -> Endo (f a)
 liftEndo (Endo f) = Endo (fmap f)
 {-# INLINE liftEndo #-}
+
+-- | Apply 'flipmap' to function wrapped in 'Endo'. It's a short hand for
+-- @'mapEndo' 'flipmap'@.
+flipLiftEndo :: Functor (FlipT f a) => Endo b -> Endo (f b a)
+flipLiftEndo (Endo f) = Endo (flipmap f)
+{-# INLINE flipLiftEndo #-}
 
 -- | Flipped version of 'appEndo'.
 runEndo :: a -> Endo a -> a
