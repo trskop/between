@@ -98,9 +98,7 @@ fromMaybeA
     => a
     -> Maybe a
     -> f a
-fromMaybeA x y = pure $ case y of
-    Nothing -> x
-    Just z -> z
+fromMaybeA = (pure .) . fromMaybe
 {-# INLINE fromMaybeA #-}
 
 -- | Shorthand for:

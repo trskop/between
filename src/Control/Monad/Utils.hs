@@ -48,7 +48,7 @@ infixr 1 <^<
 {-# INLINE (<^<) #-}
 
 -- | Shorthand for @g x \`liftM\` f x@.
-(>|>) :: Monad m => (a -> m b) -> (a -> b -> c) -> (a -> m c)
+(>|>) :: Monad m => (a -> m b) -> (a -> b -> c) -> a -> m c
 (>|>) f g x = g x `liftM` f x
 infixl 1 >|>
 {-# INLINE (>|>) #-}

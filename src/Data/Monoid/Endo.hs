@@ -40,7 +40,7 @@ import Data.Functor.FlipT (FlipT, flipmap)
 
 
 -- | Transform function wrapped in 'Endo'.
-mapEndo :: ((a -> a) -> (b -> b)) -> Endo a -> Endo b
+mapEndo :: ((a -> a) -> b -> b) -> Endo a -> Endo b
 mapEndo f (Endo g) = Endo (f g)
 {-# INLINE mapEndo #-}
 
