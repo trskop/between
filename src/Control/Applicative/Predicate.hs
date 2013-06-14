@@ -37,10 +37,12 @@ module Control.Applicative.Predicate
     , compareA
     , (.<.)
     , (<.)
+    , (.<)
     , (.>=.)
     , (>=.)
     , (.>.)
     , (>.)
+    , (.>)
     , (.<=.)
     , (<=.)
 
@@ -132,11 +134,19 @@ compareA = liftA2 compare
 {-# INLINE (.<.) #-}
 infix 4 .<.
 
--- | Shorthand for @\ x y -> 'pure' x ('.<.') y@.
+-- | Shorthand for @\ x y -> 'pure' x '.<.' y@.
+-- Has same fixity (@infix 4@) as ('<').
 (<.) :: (Applicative f, Ord a) => a -> f a -> f Bool
 (<.) = (.<.) . pure
 {-# INLINE (<.) #-}
 infixr 4 <.
+
+-- | Shorthand for @\ x y -> x '.<.' 'pure' y@.
+-- Has same fixity (@infix 4@) as ('<').
+(.<) :: (Applicative f, Ord a) => f a -> a -> f Bool
+f .< x = f .<. pure x
+{-# INLINE (.<) #-}
+infixr 4 .<
 
 -- | Function @('>=') :: 'Ord' a => a -> a -> 'Bool'@ lifted to 'Applicative'.
 -- Has same fixity (@infix 4@) as ('>=').
@@ -145,7 +155,7 @@ infixr 4 <.
 {-# INLINE (.>=.) #-}
 infix 4 .>=.
 
--- | Shorthand for @\ x y -> 'pure' x ('.>=.') y@.
+-- | Shorthand for @\ x y -> 'pure' x '.>=.' y@.
 (>=.) :: (Applicative f, Ord a) => a -> f a -> f Bool
 (>=.) = (.>=.) . pure
 {-# INLINE (>=.) #-}
@@ -158,11 +168,17 @@ infixr 4 >=.
 {-# INLINE (.>.) #-}
 infix 4 .>.
 
--- | Shorthand for @\ x y -> 'pure' x ('>.') y@.
+-- | Shorthand for @\ x y -> 'pure' x '>.' y@.
 (>.) :: (Applicative f, Ord a) => a -> f a -> f Bool
 (>.) = (.>.) . pure
 {-# INLINE (>.) #-}
 infixr 4 >.
+
+-- | Shorthand for @\ x y -> x '>.' 'pure' y@.
+(.>) :: (Applicative f, Ord a) => f a -> a -> f Bool
+f .> x = f .>. pure x
+{-# INLINE (.>) #-}
+infixr 4 .>
 
 -- | Function @('<=') :: 'Ord' a => a -> a -> 'Bool'@ lifted to 'Applicative'.
 -- Has same fixity (@infix 4@) as ('<=').
