@@ -62,6 +62,7 @@ module Control.Applicative.LiftUtils
     where
 
 import Control.Applicative
+import Data.Maybe (fromMaybe)
 
 
 -- {{{ Either -----------------------------------------------------------------
