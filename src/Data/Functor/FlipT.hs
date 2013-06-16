@@ -19,6 +19,7 @@ module Data.Functor.FlipT
       FlipT(FlipT, fromFlipT)
     , flipmap
     , (>$<)
+    , (>$$<)
 
     -- * Utility functions
     , mapFlipT
@@ -55,3 +56,9 @@ flipmap = unwrapFlipT . fmap
 (>$<) = flipmap
 infixl 4 >$<
 {-# INLINE (>$<) #-}
+
+-- | Infix variant of 'flipmap' with arguments reversed.
+(>$$<) :: Functor (FlipT f a) => f b a -> (b -> c) -> f c a
+(>$$<) = flip flipmap
+infixl 4 >$$<
+{-# INLINE (>$$<) #-}
