@@ -25,6 +25,10 @@ flag with-comonad
   description: Build with comonad instances.
   default: True
 
+flag with-semigroups
+  description: Build with semigroup instances. Implied by -fwith-comonad.
+  default: True
+
 library
   hs-source-dirs:       src
   exposed-modules:
@@ -32,15 +36,72 @@ library
     , Control.Applicative.Predicate
     , Control.Monad.Conditional
     , Control.Monad.Utils
+    , Data.Digits
     , Data.Functor.FlipT
     , Data.Functor.Utils
     , Data.Monoid.Endo
+    , Data.Monoid.FirstNonEmpty
+    , Data.Monoid.LastNonEmpty
   -- other-modules:
 
   build-depends:        base > 3 && < 5
   if flag(with-comonad)
     build-depends:      comonad >= 3.0.1.1 && < 4
     cpp-options:        -DWITH_COMONAD
+  if flag(with-comonad) || flag(with-semigroups)
+    build-depends:      semigroups >= 0.8.3 && < 1
+    -- ^ Version range taken from comonad-3.0.2.
+    cpp-options:        -DWITH_SEMIGROUPS
+
+  ghc-options:          -Wall
+  if impl(ghc >= 6.8)
+    ghc-options:        -fwarn-tabs
+  if flag(pedantic)
+    ghc-options:        -Werror
+
+test-suite not-found-unit-tests
+  hs-source-dirs:       src, test
+  type:                 exitcode-stdio-1.0
+  main-is:              unit-tests-main.hs
+  other-modules:
+      Control.Applicative.LiftUtils
+    , Control.Applicative.Predicate
+    , Control.Monad.Conditional
+    , Control.Monad.Utils
+    , Data.Digits
+    , Data.Functor.FlipT
+    , Data.Functor.Utils
+    , Data.Monoid.Endo
+    , Data.Monoid.FirstNonEmpty
+    , Data.Monoid.LastNonEmpty
+
+  build-depends:
+      base > 3 && < 5
+
+    -- Test dependencies:
+    , HUnit >= 1.2 && < 2
+      -- ^ Same constraints as test-framework-hunit
+    , QuickCheck >= 2.4 && < 2.6
+      -- ^ Same constraints as test-framework-quickcheck2
+    , test-framework >= 0.8 && < 1
+      -- ^ Same constraint as test-framework-skip, other packages that
+      -- depend on it have less restrictive bounds.
+    , test-framework-hunit >= 0.2.6
+      -- ^ Lower versions have more restrictive bounds on test-framework.
+    , test-framework-quickcheck2 >= 0.3
+      -- ^ There were changes in QuickCheck bounds in 0.2 branch and last one
+      -- on it had a compilation failure on Hackage.
+
+      -- Not required right now:
+    -- , test-framework-skip == 1.*
+      -- ^ Currently there is only version 1.0.
+  if flag(with-comonad)
+    build-depends:      comonad >= 3.0.1.1 && < 4
+    cpp-options:        -DWITH_COMONAD
+  if flag(with-comonad) || flag(with-semigroups)
+    build-depends:      semigroups >= 0.8.3 && < 1
+    -- ^ Version range taken from comonad-3.0.2.
+    cpp-options:        -DWITH_SEMIGROUPS
 
   ghc-options:          -Wall
   if impl(ghc >= 6.8)
