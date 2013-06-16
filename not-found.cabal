@@ -1,5 +1,5 @@
 name:                   not-found
-version:                0.6.3.0
+version:                0.7.0.0
 synopsis:               Functions, mostly one-liners, that aren't in base.
 description:
   Functions, mostly one-liners, that aren't in base, but make life easier.
