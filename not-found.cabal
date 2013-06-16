@@ -74,6 +74,10 @@ test-suite not-found-unit-tests
     , Data.Monoid.Endo
     , Data.Monoid.FirstNonEmpty
     , Data.Monoid.LastNonEmpty
+    , TestCase
+    , TestCase.Data.Digits
+    , TestCase.Data.Monoid.FirstNonEmpty
+    , TestCase.Data.Monoid.LastNonEmpty
 
   build-depends:
       base > 3 && < 5
