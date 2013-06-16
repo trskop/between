@@ -81,7 +81,7 @@ genericDigitsInBase
     -> a
     -- ^ Number to be split in to digits.
     -> l -> l
-genericDigitsInBase _    o _    0 = id
+genericDigitsInBase _    _ _    0 = id
 genericDigitsInBase cons o base n = genericDigitsInBase'
     $ if n < 0 then negate n else n
   where
@@ -134,5 +134,3 @@ fromDigitsInBase base = foldl ((+) . (base *)) 0
 -- | Sum list of digits in base 10.
 fromDigits :: Integral a => [a] -> a
 fromDigits = fromDigitsInBase 10
-
--- digitsInBase :: Integral a => a -> a -> [Word8]
