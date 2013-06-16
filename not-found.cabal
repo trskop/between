@@ -21,6 +21,10 @@ flag pedantic
     Pass additional flags, including -Werror, to GHC during compilation.
   default: False
 
+flag with-comonad
+  description: Build with comonad instances.
+  default: True
+
 library
   hs-source-dirs:       src
   exposed-modules:
@@ -32,7 +36,12 @@ library
     , Data.Functor.Utils
     , Data.Monoid.Endo
   -- other-modules:
+
   build-depends:        base > 3 && < 5
+  if flag(with-comonad)
+    build-depends:      comonad >= 3.0.1.1 && < 4
+    cpp-options:        -DWITH_COMONAD
+
   ghc-options:          -Wall
   if impl(ghc >= 6.8)
     ghc-options:        -fwarn-tabs

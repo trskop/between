@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
 -- |
@@ -8,7 +9,7 @@
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  non-portable (FlexibleInstances, FlexibleContexts)
+-- Portability:  non-portable (CPP, FlexibleInstances, FlexibleContexts)
 --
 -- Flip arguments of a type, this enables to create instances like
 -- @'Functor' ('FlipT' (,) a)@. Unfortunately it requires few language
@@ -29,15 +30,29 @@ module Data.Functor.FlipT
 
 import Control.Monad.Instances ()
 
+#ifdef WITH_COMONAD
+import Control.Comonad
+#endif
+
 
 newtype FlipT f a b = FlipT {fromFlipT :: f b a}
 
 instance Functor (FlipT Either a) where
     fmap f (FlipT (Left x))  = FlipT (Left (f x))
     fmap _ (FlipT (Right x)) = FlipT (Right x)
+    {-# INLINE fmap #-}
 
 instance Functor (FlipT (,) a) where
     fmap f (FlipT (x, y)) = FlipT (f x, y)
+    {-# INLINE fmap #-}
+
+#ifdef WITH_COMONAD
+instance Comonad (FlipT (,) a) where
+    duplicate (FlipT p) = FlipT (FlipT p, snd p)
+    {-# INLINE duplicate #-}
+    extract (FlipT p) = fst p
+    {-# INLINE extract #-}
+#endif
 
 mapFlipT :: (f a b -> g c d) -> FlipT f b a -> FlipT g d c
 mapFlipT = (FlipT .) . (. fromFlipT)
