@@ -38,7 +38,7 @@ tests =
         test_genericDigitsInBase
     ]
 
-mkTest :: (Eq b, Show a, Show b) => ((a -> b), Maybe Int) -> a -> b -> Test
+mkTest :: (Eq b, Show a, Show b) => (a -> b, Maybe Int) -> a -> b -> Test
 mkTest (f, b) n r =
     testCase (concat $ show n : " --> " : show r
         : maybe [] (\ x -> [" (base ", show x, ")"]) b)

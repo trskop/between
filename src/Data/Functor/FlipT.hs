@@ -17,6 +17,10 @@
 module Data.Functor.FlipT
     (
     -- * FlipT
+    --
+    -- | Newtype that allows functor instances with flipped last two type
+    -- variables. Unfortunately it requires FlexibleInstances and sometimes
+    -- also FlexibleContexts language extensions.
       FlipT(FlipT, fromFlipT)
     , flipmap
     , (>$<)
@@ -28,13 +32,16 @@ module Data.Functor.FlipT
     )
     where
 
+import Control.Applicative (Applicative(..))
 import Control.Monad.Instances ()
+import Data.Monoid (Monoid(..))
 
 #ifdef WITH_COMONAD
 import Control.Comonad
 #endif
 
 
+-- | Flip last two type variables.
 newtype FlipT f a b = FlipT {fromFlipT :: f b a}
 
 instance Functor (FlipT Either a) where
@@ -45,6 +52,15 @@ instance Functor (FlipT Either a) where
 instance Functor (FlipT (,) a) where
     fmap f (FlipT (x, y)) = FlipT (f x, y)
     {-# INLINE fmap #-}
+
+instance Monoid a => Applicative (FlipT (,) a) where
+    pure x = FlipT (x, mempty)
+    FlipT (f, u) <*> FlipT (x, v) = FlipT (f x, u `mappend` v)
+
+instance Applicative (FlipT Either a) where
+    pure = FlipT . Left
+    FlipT (Right x) <*> _ = FlipT (Right x)
+    FlipT (Left  f) <*> x = fmap f x
 
 #ifdef WITH_COMONAD
 instance Comonad (FlipT (,) a) where
@@ -62,6 +78,8 @@ unwrapFlipT :: (FlipT f a b -> FlipT g c d) -> f b a -> g d c
 unwrapFlipT = (fromFlipT .) . (. FlipT)
 {-# INLINE unwrapFlipT #-}
 
+-- | Like 'fmap', but uses different instance.  Short hand for
+-- @'unwrapFlipT' . 'fmap'@.
 flipmap :: Functor (FlipT f a) => (b -> c) -> f b a -> f c a
 flipmap = unwrapFlipT . fmap
 {-# INLINE flipmap #-}
