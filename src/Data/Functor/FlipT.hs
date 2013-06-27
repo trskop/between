@@ -37,7 +37,7 @@ import Control.Monad.Instances ()
 import Data.Monoid (Monoid(..))
 
 #ifdef WITH_COMONAD
-import Control.Comonad
+import Control.Comonad (Comonad(..))
 #endif
 
 
