@@ -12,7 +12,9 @@ module TestCase.Data.Functor.FlipT (tests)
     where
 
 import Control.Applicative (Applicative(..))
+import Control.Arrow (first)
 
+import Control.Comonad (Comonad(..))
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
 --import Test.Framework.Providers.QuickCheck2 (testProperty)
@@ -65,7 +67,7 @@ test_instanceApplicativePair =
     [ testCase "pure 1 = FlipT (1, ()) :: FlipT (Int, ())"
         $ (1 :: Int, ()) @=? fromFlipT (pure 1)
     , testCase "pure False = FlipT (False, []) :: FlipT (Bool, [Int])"
-        $ (False, ([] :: [Int])) @=? fromFlipT (pure False)
+        $ (False, [] :: [Int]) @=? fromFlipT (pure False)
     , testCase
         "FlipT ((+ 1), \"foo\") <*> FlipT (2, \"bar\") = FlipT (3, \"foobar\")"
         $ (3 :: Int, "foobar")
@@ -100,7 +102,15 @@ test_instanceApplicativeEither =
 
 #ifdef WITH_COMONAD
 test_instanceComonadPair :: [Test]
-test_instanceComonadPair = []
+test_instanceComonadPair =
+    [ testCase "extract"
+        $ 1 @=? extract (FlipT (1 :: Int, ()))
+    , testCase "duplicate"
+        $ ((1 :: Int, ()), ())
+            @=? (first fromFlipT . fromFlipT . duplicate $ FlipT (1, ()))
+    , testCase "extract . duplicate"
+        $ (1, ()) @=? (fromFlipT . extract . duplicate $ FlipT (1 :: Int, ()))
+    ]
 #endif
 
 test_mapFlipT :: [Test]
