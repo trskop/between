@@ -96,14 +96,14 @@ test-suite not-found-unit-tests
     -- Test dependencies:
     , HUnit >= 1.2 && < 2
       -- ^ Same constraints as test-framework-hunit
-    , QuickCheck >= 2.4 && < 2.6
+    -- , QuickCheck >= 2.4 && < 2.6
       -- ^ Same constraints as test-framework-quickcheck2
     , test-framework >= 0.8 && < 1
       -- ^ Same constraint as test-framework-skip, other packages that
       -- depend on it have less restrictive bounds.
     , test-framework-hunit >= 0.2.6
       -- ^ Lower versions have more restrictive bounds on test-framework.
-    , test-framework-quickcheck2 >= 0.3
+    -- , test-framework-quickcheck2 >= 0.3
       -- ^ There were changes in QuickCheck bounds in 0.2 branch and last one
       -- on it had a compilation failure on Hackage.
 
