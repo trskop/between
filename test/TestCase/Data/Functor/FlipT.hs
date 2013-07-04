@@ -14,7 +14,9 @@ module TestCase.Data.Functor.FlipT (tests)
 import Control.Applicative (Applicative(..))
 import Control.Arrow (first)
 
+#ifdef WITH_COMONAD
 import Control.Comonad (Comonad(..))
+#endif
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
 --import Test.Framework.Providers.QuickCheck2 (testProperty)
