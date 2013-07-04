@@ -15,7 +15,7 @@ module Data.Functor.Utils
     -- * Functor
       Functor(..)
 #if !MIN_VERSION_base(4,2,0)
-      (<$)
+    , (<$)
 #endif
     , ($>)
 
