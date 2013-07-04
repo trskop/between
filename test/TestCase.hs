@@ -16,6 +16,7 @@ import Test.Framework (Test, testGroup)
 
 import qualified TestCase.Data.Digits as Digits (tests)
 import qualified TestCase.Data.Functor.FlipT as FlipT (tests)
+import qualified TestCase.Data.Functor.Utils as FunctorUtils (tests)
 import qualified TestCase.Data.Monoid.FirstNonEmpty as FirstNonEmpty (tests)
 import qualified TestCase.Data.Monoid.LastNonEmpty as LastNonEmpty (tests)
 
@@ -24,6 +25,7 @@ tests :: [Test]
 tests =
     [ testGroup "Data.Digits" Digits.tests
     , testGroup "TestCase.Data.Functor.FlipT" FlipT.tests
+    , testGroup "TestCase.Data.Functor.Utils" FunctorUtils.tests
     , testGroup "Data.Monoid.FirstNonEmpty" FirstNonEmpty.tests
     , testGroup "Data.Monoid.LastNonEmpty" LastNonEmpty.tests
     ]

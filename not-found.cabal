@@ -76,6 +76,8 @@ test-suite not-found-unit-tests
     , Data.Monoid.LastNonEmpty
     , TestCase
     , TestCase.Data.Digits
+    , TestCase.Data.Functor.FlipT
+    , TestCase.Data.Functor.Utils
     , TestCase.Data.Monoid.FirstNonEmpty
     , TestCase.Data.Monoid.LastNonEmpty
 
