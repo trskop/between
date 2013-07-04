@@ -1,8 +1,13 @@
 name:                   not-found
 version:                0.7.1.2
-synopsis:               Functions, mostly one-liners, that aren't in base.
+synopsis:
+  Functions (mostly one-liners) and types that aren't in base.
 description:
-  Functions, mostly one-liners, that aren't in base, but make life easier.
+  Over the years of their work Haskellers tend to create a lot of small
+  utilities and types that they use in various places. It's not uncommon that
+  such patchworks are published as a small, and also not so small, libraries.
+  This library is one of those, and we will see in what category it ends up
+  over time.
 homepage:               https://github.com/trskop/hs-not-found
 license:                BSD3
 license-file:           LICENSE
@@ -18,15 +23,19 @@ extra-source-files:
 
 flag pedantic
   description:
-    Pass additional flags, including -Werror, to GHC during compilation.
+    Pass additional warning flags including -Werror to GHC during compilation.
   default: False
 
 flag with-comonad
-  description: Build with comonad instances.
+  description:
+    Adds comonad to the list of dependencies and builds Comonad instances for
+    various types.
   default: True
 
 flag with-semigroups
-  description: Build with semigroup instances. Implied by -fwith-comonad.
+  description:
+    Adds semigroups to the list of dependencies and builds Semigroup instances
+    for various types. Implied by -fwith-comonad.
   default: True
 
 library
