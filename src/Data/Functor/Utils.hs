@@ -12,16 +12,18 @@
 -- Utility functions for Functors.
 module Data.Functor.Utils
     (
-#if !MIN_VERSION_base(4,2,0)
+    -- * Functor
       Functor(..)
-    , (<$>)
-#else
-      (<$>)
-    , (<$)
+#if !MIN_VERSION_base(4,2,0)
+      (<$)
 #endif
-    , (<$$>)
     , ($>)
 
+    -- ** Infix variations on fmap
+    , (<$>)
+    , (<$$>)
+
+    -- ** Utility functions
     , (<#>)
     , (<##>)
     )
@@ -62,12 +64,15 @@ infixl 4 <##>
 --
 -- Implemented as: @f '<#>' x = ('$' x) '<$>' f@.
 --
--- Example:
+-- Examples:
 --
 -- >>> Just (+1) <#> 2
--- 3
+-- Just 3
+-- >>> [(+1), (*2)] <#> 3
+-- [4,6]
 --
--- For @instance 'Functor' ((->) r)@ this function behaves as 'flip':
+-- For @instance 'Functor' ((->) r)@ this function behaves as infix version of
+-- flip 'flip':
 --
 -- >>> (-) <#> 1 $ 2
 -- 1
