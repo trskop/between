@@ -1,17 +1,24 @@
 #!/bin/sh
 
-HLINT_FLAGS='--colour'
-
-if [ -d 'src' ]; then
-    hlint $HLINT_FLAGS src
-
-    if [ -d 'test' ]; then
-        hlint $HLINT_FLAGS --ignore='Use camelCase' test
-    fi
-    
-    if [ -d 'tests' ]; then
-        hlint $HLINT_FLAGS --ignore='Use camelCase' tests
-    fi
-else
-    hlint $HLINT_FLAGS .
+# Colorize output if it's a terminal
+if [ -t 1 ]; then
+    HLINT_FLAGS='--colour'
 fi
+
+DIRS=''
+for D in 'src' 'test' 'tests'; do
+    if [ -d "$D" ]; then
+        if [ -z "$DIRS" ]; then
+            DIRS="$D"
+        else
+            DIRS="$DIRS $D"
+        fi
+    fi
+done
+
+# Use current directory if no known subdirectories with source code were found.
+if [ -z "$DIRS" ]; then
+    DIRS='.'
+fi
+
+hlint $HLINT_FLAGS .

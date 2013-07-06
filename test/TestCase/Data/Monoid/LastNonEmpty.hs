@@ -32,6 +32,7 @@ test_mempty =
     , testCase "LastNonEmpty ()" $ LastNonEmpty () @=? mempty
     , testCase "LastNonEmpty [Int]" $ LastNonEmpty ([] :: [Int]) @=? mempty
     ]
+{-# ANN test_mempty "HLint: ignore Use camelCase" #-}
 
 test_mappend :: [Test]
 test_mappend =
@@ -70,3 +71,4 @@ test_mappend =
         $ LastNonEmpty w
             @=? (LastNonEmpty x
                 `mappend` (LastNonEmpty y `mappend` LastNonEmpty z))
+{-# ANN test_mappend "HLint: ignore Use camelCase" #-}

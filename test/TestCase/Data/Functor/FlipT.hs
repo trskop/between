@@ -57,12 +57,14 @@ test_instanceFunctorEither =
   where
     restrict :: Either Int Int -> Either Int Int
     restrict = id
+{-# ANN test_instanceFunctorEither "HLint: ignore Use camelCase" #-}
 
 test_instanceFunctorPair :: [Test]
 test_instanceFunctorPair =
     [ testCase "(+1) `fmap` FlipT (2, 'a') = FlipT (3, 'a')"
         $ (3 :: Int, 'a') @=? fromFlipT ((+1) `fmap` FlipT (2, 'a'))
     ]
+{-# ANN test_instanceFunctorPair "HLint: ignore Use camelCase" #-}
 
 test_instanceApplicativePair :: [Test]
 test_instanceApplicativePair =
@@ -75,6 +77,7 @@ test_instanceApplicativePair =
         $ (3 :: Int, "foobar")
             @=? fromFlipT (FlipT ((+ 1), "foo") <*> FlipT (2, "bar"))
     ]
+{-# ANN test_instanceApplicativePair "HLint: ignore Use camelCase" #-}
 
 test_instanceApplicativeEither :: [Test]
 test_instanceApplicativeEither =
@@ -101,6 +104,7 @@ test_instanceApplicativeEither =
 
     restrictRight :: Either a Int -> Either a Int
     restrictRight = id
+{-# ANN test_instanceApplicativeEither "HLint: ignore Use camelCase" #-}
 
 #ifdef WITH_COMONAD
 test_instanceComonadPair :: [Test]
@@ -113,13 +117,17 @@ test_instanceComonadPair =
     , testCase "extract . duplicate"
         $ (1, ()) @=? (fromFlipT . extract . duplicate $ FlipT (1 :: Int, ()))
     ]
+{-# ANN test_instanceComonadPair "HLint: ignore Use camelCase" #-}
 #endif
 
 test_mapFlipT :: [Test]
 test_mapFlipT = []
+{-# ANN test_mapFlipT "HLint: ignore Use camelCase" #-}
 
 test_unwrapFlipT :: [Test]
 test_unwrapFlipT = []
+{-# ANN test_unwrapFlipT "HLint: ignore Use camelCase" #-}
 
 test_flipmap :: [Test]
 test_flipmap = []
+{-# ANN test_flipmap "HLint: ignore Use camelCase" #-}

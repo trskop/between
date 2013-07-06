@@ -36,6 +36,7 @@ test_infixFmapApply =
     , testCase "(-) <#> 1 $ 2 = 1"
         $ 1 @=? ((-) <#> 1 $ 2 :: Int)
     ]
+{-# ANN test_infixFmapApply "HLint: ignore Use camelCase" #-}
 
 test_infixFlipFmapApply :: [Test]
 test_infixFlipFmapApply =
@@ -46,3 +47,4 @@ test_infixFlipFmapApply =
     , testCase "1 <##> (-) $ 2 = 1"
         $ 1 @=? (1 <##> (-) $ 2 :: Int)
     ]
+{-# ANN test_infixFlipFmapApply "HLint: ignore Use camelCase" #-}

@@ -69,6 +69,7 @@ test_numberOfDigitsInBase =
     f = numberOfDigitsInBase
     f10 = (f 10 . int, Just 10)
     f16 = (f 16 . int, Just 16)
+{-# ANN test_numberOfDigitsInBase "HLint: ignore Use camelCase" #-}
 
 test_numberOfDigits :: [Test]
 test_numberOfDigits =
@@ -81,6 +82,7 @@ test_numberOfDigits =
     , mkTest f (-1234567890) 10
     ]
   where f = (numberOfDigits . int, Nothing)
+{-# ANN test_numberOfDigits "HLint: ignore Use camelCase" #-}
 
 test_digitsInBase :: [Test]
 test_digitsInBase =
@@ -104,6 +106,7 @@ test_digitsInBase =
     f = digitsInBase
     f10 = (f 10 . int, Just 10)
     f16 = (f 16 . int, Just 16)
+{-# ANN test_digitsInBase "HLint: ignore Use camelCase" #-}
 
 test_digits :: [Test]
 test_digits =
@@ -116,6 +119,7 @@ test_digits =
     , mkTest f (-1234567890) [1,2,3,4,5,6,7,8,9,0]
     ]
   where f = (digits . int, Nothing)
+{-# ANN test_digits "HLint: ignore Use camelCase" #-}
 
 test_reverseDigits :: [Test]
 test_reverseDigits =
@@ -128,6 +132,7 @@ test_reverseDigits =
     , mkTest f (-1234567890) [0,9,8,7,6,5,4,3,2,1]
     ]
   where f = (reverseDigits . int, Nothing)
+{-# ANN test_reverseDigits "HLint: ignore Use camelCase" #-}
 
 test_fromDigitsInBase :: [Test]
 test_fromDigitsInBase =
@@ -142,6 +147,7 @@ test_fromDigitsInBase =
     f = fromDigitsInBase
     f10 = (int . f 10, Just 10)
     f16 = (int . f 16, Just 16)
+{-# ANN test_fromDigitsInBase "HLint: ignore Use camelCase" #-}
 
 test_fromDigits :: [Test]
 test_fromDigits =
@@ -151,6 +157,8 @@ test_fromDigits =
     , mkTest f [1,2,3,4,5,6,7,8,9,0] 1234567890
     ]
   where f = (int . fromDigits, Nothing)
+{-# ANN test_fromDigits "HLint: ignore Use camelCase" #-}
 
 test_genericDigitsInBase :: [Test]
 test_genericDigitsInBase = []
+{-# ANN test_genericDigitsInBase "HLint: ignore Use camelCase" #-}
