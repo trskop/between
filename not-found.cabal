@@ -14,6 +14,7 @@ description:
   is that this library doesn't shy away from sensible language extensions.
 
 homepage:               https://github.com/trskop/hs-not-found
+bug-reports:            https://github.com/trskop/hs-not-found/issues
 license:                BSD3
 license-file:           LICENSE
 author:                 Peter Trško
