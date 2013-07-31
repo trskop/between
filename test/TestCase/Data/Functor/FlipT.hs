@@ -60,9 +60,6 @@ test_instanceFunctorEither =
     , testCase "(+1) `fmap` FlipT (Right 2) = FlipT (Right 2)"
         $ restrict (Right 2) @=? fromFlipT ((+1) `fmap` FlipT (Right 2))
     ]
-  where
-    restrict :: Either Int Int -> Either Int Int
-    restrict = id
 {-# ANN test_instanceFunctorEither "HLint: ignore Use camelCase" #-}
 
 test_instanceFunctorPair :: [Test]
@@ -104,12 +101,6 @@ test_instanceApplicativeEither =
         $ restrict (Right 1)
             @=? fromFlipT (FlipT (Right 1) <*> FlipT (Right 2))
     ]
-  where
-    restrict :: Either Int Int -> Either Int Int
-    restrict = id
-
-    restrictRight :: Either a Int -> Either a Int
-    restrictRight = id
 {-# ANN test_instanceApplicativeEither "HLint: ignore Use camelCase" #-}
 
 test_instanceMonadEither :: [Test]
@@ -119,24 +110,24 @@ test_instanceMonadEither =
     , testCase "return False = FlipT (Left False) :: FlipT (Either Bool Int)"
         $ restrictRight (Left False) @=? fromFlipT (return False)
     , testCase
-        ( "return 1 >>= return . (+ 1) = FlipT (Left 2) "
+        ( "FlipT (Left 1) >>= return . (+ 1) = FlipT (Left 2) "
         ++ ":: FlipT (Either Int Int)")
-        $ restrict (Left 2) @=? fromFlipT (return 1 >>= return . (+ 1))
+        $ restrict (Left 2) @=? fromFlipT (left 1 >>= left . (+ 1))
     , testCase
-        ("FlipT (Right 1) >>= return . (+ 1) = FlipT (Right 1)"
+        ("FlipT (Right 1) >>= FlipT . Left . (+ 1) = FlipT (Right 1)"
         ++ " :: FlipT (Either Int Int)")
-        $ restrict (Right 1) @=? fromFlipT (FlipT (Right 1) >>= return . (+ 1))
+        $ restrict (Right 1) @=? fromFlipT (right 1 >>= left . (+ 1))
     , testCase
-        ( "return 1 >>= FlipT . Right . (+ 1) = FlipT (Right 2) "
+        ( "FlipT (Left 1) >>= FlipT . Right . (+ 1) = FlipT (Right 2) "
         ++ ":: FlipT (Either Int Int)")
-        $ restrict (Right 2) @=? fromFlipT (return 1 >>= FlipT . Right . (+ 1))
+        $ restrict (Right 2) @=? fromFlipT (left 1 >>= right . (+ 1))
     ]
   where
-    restrict :: Either Int Int -> Either Int Int
-    restrict = id
+    left :: a -> FlipT Either b a
+    left = FlipT . Left
 
-    restrictRight :: Either a Int -> Either a Int
-    restrictRight = id
+    right :: b -> FlipT Either b a
+    right = FlipT . Right
 {-# ANN test_instanceMonadEither "HLint: ignore Use camelCase" #-}
 
 #ifdef WITH_COMONAD
@@ -172,3 +163,9 @@ test_unwrapFlipT2 = []
 test_flipmap :: [Test]
 test_flipmap = []
 {-# ANN test_flipmap "HLint: ignore Use camelCase" #-}
+
+restrict :: Either Int Int -> Either Int Int
+restrict = id
+
+restrictRight :: Either a Int -> Either a Int
+restrictRight = id
