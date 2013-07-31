@@ -12,6 +12,12 @@ description:
   All functions, types and instances in this library were at some point used in
   real world applications. One of the aspects of coding for user applications
   is that this library doesn't shy away from sensible language extensions.
+  .
+  README and ChangeLog can be found in source code package and on GitHub:
+  .
+  * <https://github.com/trskop/hs-not-found/blob/master/README.md>
+  .
+  * <https://github.com/trskop/hs-not-found/blob/master/ChangeLog.md>
 
 homepage:               https://github.com/trskop/hs-not-found
 bug-reports:            https://github.com/trskop/hs-not-found/issues
@@ -26,6 +32,7 @@ cabal-version:          >=1.8
 
 extra-source-files:
     README.md
+  , ChangeLog.md
 
 flag pedantic
   description:
