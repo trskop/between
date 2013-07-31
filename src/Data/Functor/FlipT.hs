@@ -19,16 +19,26 @@ module Data.Functor.FlipT
     -- * FlipT
     --
     -- | Newtype that allows functor instances with flipped last two type
-    -- variables. Unfortunately it requires FlexibleInstances and sometimes
-    -- also FlexibleContexts language extensions.
+    -- variables. Unfortunately it requires @FlexibleInstances@ and sometimes
+    -- also @FlexibleContexts@ language extensions.
       FlipT(FlipT, fromFlipT)
     , flipmap
     , (>$<)
     , (>$$<)
 
     -- * Utility functions
+    --
+    -- | Properties that hold:
+    --
+    -- * @'unwrapFlipT' . 'mapFlipT' = 'id'@
+    --
+    -- * @'mapFlipT' . 'unwrapFlipT' = 'id'@
+    --
+    -- Analogic properties hold for 'mapFlipT2' and 'unwrapFlipT2'.
     , mapFlipT
+    , mapFlipT2
     , unwrapFlipT
+    , unwrapFlipT2
     )
     where
 
@@ -70,13 +80,30 @@ instance Comonad (FlipT (,) a) where
     {-# INLINE extract #-}
 #endif
 
+-- | Lift transformation of inner functor in to transofrmation of 'FlipT'
+-- functor.
 mapFlipT :: (f a b -> g c d) -> FlipT f b a -> FlipT g d c
 mapFlipT = (FlipT .) . (. fromFlipT)
 {-# INLINE mapFlipT #-}
 
+-- | Variant of 'mapFlipT' for functions with arity two.
+mapFlipT2
+    :: (f1 a1 b1 -> f2 a2 b2 -> f3 a3 b3)
+    -> FlipT f1 b1 a1 -> FlipT f2 b2 a2 -> FlipT f3 b3 a3
+mapFlipT2 f x y = FlipT $ f (fromFlipT x) (fromFlipT y)
+{-# INLINE mapFlipT2 #-}
+
+-- | Inverse function to 'mapFlipT'.
 unwrapFlipT :: (FlipT f a b -> FlipT g c d) -> f b a -> g d c
 unwrapFlipT = (fromFlipT .) . (. FlipT)
 {-# INLINE unwrapFlipT #-}
+
+-- | Inverse function to 'mapFlipT2'.
+unwrapFlipT2
+    :: (FlipT f1 b1 a1 -> FlipT f2 b2 a2 -> FlipT f3 b3 a3)
+    -> f1 a1 b1 -> f2 a2 b2 -> f3 a3 b3
+unwrapFlipT2 f x y = fromFlipT $ f (FlipT x) (FlipT y)
+{-# INLINE unwrapFlipT2 #-}
 
 -- | Like 'fmap', but uses different instance.  Short hand for
 -- @'unwrapFlipT' . 'fmap'@.
