@@ -72,6 +72,13 @@ instance Applicative (FlipT Either a) where
     FlipT (Right x) <*> _ = FlipT (Right x)
     FlipT (Left  f) <*> x = fmap f x
 
+instance Monad (FlipT Either a) where
+    return = FlipT . Left
+
+    -- FlipT Either a b -> (b -> FlipT Either a c) -> FlipT Either a c
+    FlipT (Right x) >>= _ = FlipT (Right x)
+    FlipT (Left x)  >>= f = f x
+
 #ifdef WITH_COMONAD
 instance Comonad (FlipT (,) a) where
     duplicate (FlipT p) = FlipT (FlipT p, snd p)
