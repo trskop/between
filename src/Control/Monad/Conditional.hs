@@ -49,7 +49,7 @@ whenLeft x f = case x of
     _ -> return ()
 
 whenLeftM :: Monad m => m (Either a b) -> (a -> m ()) -> m ()
-whenLeftM x f = x >>= (`whenLeft` f)
+whenLeftM = liftFstM whenLeft
 
 whenRight :: Monad m => Either a b -> (b -> m ()) -> m ()
 whenRight x f = case x of
@@ -57,7 +57,7 @@ whenRight x f = case x of
     _ -> return ()
 
 whenRightM :: Monad m => m (Either a b) -> (b -> m ()) -> m ()
-whenRightM x f = x >>= (`whenRight` f)
+whenRightM = liftFstM whenRight
 
 -- }}} Either -----------------------------------------------------------------
 
@@ -69,7 +69,7 @@ whenJust x f = case x of
     _ -> return ()
 
 whenJustM :: Monad m => m (Maybe a) -> (a -> m ()) -> m ()
-whenJustM x f = x >>= (`whenJust` f)
+whenJustM = liftFstM whenJust
 
 whenNothing :: Monad m => Maybe a -> m () -> m ()
 whenNothing x f = case x of
@@ -77,26 +77,38 @@ whenNothing x f = case x of
     _ -> return ()
 
 whenNothingM :: Monad m => m (Maybe a) -> m () -> m ()
-whenNothingM x m = x >>= (`whenNothing` m)
+whenNothingM = liftFstM whenNothing
 
 -- }}} Maybe ------------------------------------------------------------------
 
 -- {{{ Monoid -----------------------------------------------------------------
 
 whenEmpty :: (Eq a, Monad m, Monoid a) => a -> m () -> m ()
-whenEmpty x f
-  | x == mempty = f
-  | otherwise = return ()
+whenEmpty = flip (`maybeEmpty` \ _ -> return ())
 
 whenEmptyM :: (Eq a, Monad m, Monoid a) => m a -> m () -> m ()
-whenEmptyM x f = x >>= (`whenEmpty` f)
+whenEmptyM = liftFstM whenEmpty
 
 unlessEmpty :: (Eq a, Monad m, Monoid a) => a -> (a -> m ()) -> m ()
-unlessEmpty x f
-  | x == mempty = return ()
-  | otherwise = f x
+unlessEmpty = flip (maybeEmpty (return ()))
 
 unlessEmptyM :: (Eq a, Monad m, Monoid a) => m a -> (a -> m ()) -> m ()
-unlessEmptyM x f = x >>= (`unlessEmpty` f)
+unlessEmptyM = liftFstM unlessEmpty
 
 -- }}} Monoid -----------------------------------------------------------------
+
+-- {{{ Helper functions -------------------------------------------------------
+
+-- TODO: Move this function somewhare sensible and export it.
+maybeEmpty :: (Eq a, Monoid a) => b -> (a -> b) -> a -> b
+maybeEmpty x f y
+  | y == mempty = x
+  | otherwise = f y
+{-# INLINE maybeEmpty #-}
+
+-- Does this function represent some kind of reusable pattern?
+liftFstM :: (Monad m) => (a -> b -> m c) -> m a -> b -> m c
+liftFstM f x y = x >>= (`f` y)
+{-# INLINE liftFstM #-}
+
+-- }}} Helper functions -------------------------------------------------------
