@@ -35,14 +35,20 @@ tests =
         test_instanceApplicativePair
     , testGroup "instance Applicative (FlipT Either a)"
         test_instanceApplicativeEither
+    , testGroup "instance Monad (FlipT Either a)"
+        test_instanceMonadEither
 #ifdef WITH_COMONAD
     , testGroup "instance Comonad (FlipT (,) a)"
         test_instanceComonadPair
 #endif
     , testGroup "mapFlipT"
         test_mapFlipT
+    , testGroup "mapFlipT2"
+        test_mapFlipT2
     , testGroup "unwrapFlipT"
         test_unwrapFlipT
+    , testGroup "unwrapFlipT2"
+        test_unwrapFlipT2
     , testGroup "flipmap"
         test_flipmap
     ]
@@ -106,6 +112,33 @@ test_instanceApplicativeEither =
     restrictRight = id
 {-# ANN test_instanceApplicativeEither "HLint: ignore Use camelCase" #-}
 
+test_instanceMonadEither :: [Test]
+test_instanceMonadEither =
+    [ testCase "return 1 = FlipT (Left 1) :: FlipT (Either Int Int)"
+        $ restrictRight (Left (1 :: Int)) @=? fromFlipT (return 1)
+    , testCase "return False = FlipT (Left False) :: FlipT (Either Bool Int)"
+        $ restrictRight (Left False) @=? fromFlipT (return False)
+    , testCase
+        ( "return 1 >>= return . (+ 1) = FlipT (Left 2) "
+        ++ ":: FlipT (Either Int Int)")
+        $ restrict (Left 2) @=? fromFlipT (return 1 >>= return . (+ 1))
+    , testCase
+        ("FlipT (Right 1) >>= return . (+ 1) = FlipT (Right 1)"
+        ++ " :: FlipT (Either Int Int)")
+        $ restrict (Right 1) @=? fromFlipT (FlipT (Right 1) >>= return . (+ 1))
+    , testCase
+        ( "return 1 >>= FlipT . Right . (+ 1) = FlipT (Right 2) "
+        ++ ":: FlipT (Either Int Int)")
+        $ restrict (Right 2) @=? fromFlipT (return 1 >>= FlipT . Right . (+ 1))
+    ]
+  where
+    restrict :: Either Int Int -> Either Int Int
+    restrict = id
+
+    restrictRight :: Either a Int -> Either a Int
+    restrictRight = id
+{-# ANN test_instanceMonadEither "HLint: ignore Use camelCase" #-}
+
 #ifdef WITH_COMONAD
 test_instanceComonadPair :: [Test]
 test_instanceComonadPair =
@@ -124,9 +157,17 @@ test_mapFlipT :: [Test]
 test_mapFlipT = []
 {-# ANN test_mapFlipT "HLint: ignore Use camelCase" #-}
 
+test_mapFlipT2 :: [Test]
+test_mapFlipT2 = []
+{-# ANN test_mapFlipT2 "HLint: ignore Use camelCase" #-}
+
 test_unwrapFlipT :: [Test]
 test_unwrapFlipT = []
 {-# ANN test_unwrapFlipT "HLint: ignore Use camelCase" #-}
+
+test_unwrapFlipT2 :: [Test]
+test_unwrapFlipT2 = []
+{-# ANN test_unwrapFlipT2 "HLint: ignore Use camelCase" #-}
 
 test_flipmap :: [Test]
 test_flipmap = []
