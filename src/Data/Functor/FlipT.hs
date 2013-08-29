@@ -75,7 +75,7 @@ instance Applicative (FlipT Either a) where
 instance Monad (FlipT Either a) where
     return = FlipT . Left
 
-    -- FlipT Either a b -> (b -> FlipT Either a c) -> FlipT Either a c
+    -- :: FlipT Either a b -> (b -> FlipT Either a c) -> FlipT Either a c
     FlipT (Right x) >>= _ = FlipT (Right x)
     FlipT (Left x)  >>= f = f x
 
@@ -90,26 +90,26 @@ instance Comonad (FlipT (,) a) where
 -- | Lift transformation of inner functor in to transofrmation of 'FlipT'
 -- functor.
 mapFlipT :: (f a b -> g c d) -> FlipT f b a -> FlipT g d c
-mapFlipT = (FlipT .) . (. fromFlipT)
+mapFlipT = FlipT `o` fromFlipT
 {-# INLINE mapFlipT #-}
 
 -- | Variant of 'mapFlipT' for functions with arity two.
 mapFlipT2
     :: (f1 a1 b1 -> f2 a2 b2 -> f3 a3 b3)
     -> FlipT f1 b1 a1 -> FlipT f2 b2 a2 -> FlipT f3 b3 a3
-mapFlipT2 f x y = FlipT $ f (fromFlipT x) (fromFlipT y)
+mapFlipT2 = mapFlipT `o` fromFlipT
 {-# INLINE mapFlipT2 #-}
 
 -- | Inverse function to 'mapFlipT'.
 unwrapFlipT :: (FlipT f a b -> FlipT g c d) -> f b a -> g d c
-unwrapFlipT = (fromFlipT .) . (. FlipT)
+unwrapFlipT = fromFlipT `o` FlipT
 {-# INLINE unwrapFlipT #-}
 
 -- | Inverse function to 'mapFlipT2'.
 unwrapFlipT2
     :: (FlipT f1 b1 a1 -> FlipT f2 b2 a2 -> FlipT f3 b3 a3)
     -> f1 a1 b1 -> f2 a2 b2 -> f3 a3 b3
-unwrapFlipT2 f x y = fromFlipT $ f (FlipT x) (FlipT y)
+unwrapFlipT2 = unwrapFlipT `o` FlipT
 {-# INLINE unwrapFlipT2 #-}
 
 -- | Like 'fmap', but uses different instance.  Short hand for
@@ -119,13 +119,34 @@ flipmap = unwrapFlipT . fmap
 {-# INLINE flipmap #-}
 
 -- | Infix variant of 'flipmap'.
+--
+-- This colides with:
+--
+-- > (>$<) :: Contravariant f => (a -> b) -> f b -> f a
+--
+-- Defined in /contravariant/
+-- <http://hackage.haskell.org/package/contravariant> package as of version
+-- 0.1.3.
 (>$<) :: Functor (FlipT f a) => (b -> c) -> f b a -> f c a
 (>$<) = flipmap
 infixl 4 >$<
 {-# INLINE (>$<) #-}
 
 -- | Infix variant of 'flipmap' with arguments reversed.
+--
+-- This colides with:
+--
+-- > (>$$<) :: Contravariant f => f b -> (a -> b) -> f a
+--
+-- Defined in /contravariant/
+-- <http://hackage.haskell.org/package/contravariant> package as of version
+-- 0.1.3.
 (>$$<) :: Functor (FlipT f a) => f b a -> (b -> c) -> f c a
 (>$$<) = flip flipmap
 infixl 4 >$$<
 {-# INLINE (>$$<) #-}
+
+-- | Compose 'fmap'-like function from constructor and selector.
+o :: (a' -> c') -> (c -> a) -> (a -> a') -> c -> c'
+f `o` g = (f .) . (. g)
+{-# INLINE o #-}
