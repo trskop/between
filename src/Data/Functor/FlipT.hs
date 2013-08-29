@@ -21,6 +21,10 @@ module Data.Functor.FlipT
     -- | Newtype that allows functor instances with flipped last two type
     -- variables. Unfortunately it requires @FlexibleInstances@ and sometimes
     -- also @FlexibleContexts@ language extensions.
+    --
+    -- Note that @'FlipT' 'Const' b a@ is isomorphic to @'Tagged' b a@ where
+    -- 'Tagged' is from @Data.Tagged@ from /tagged/
+    -- <http://hackage.haskell.org/package/tagged> package.
       FlipT(FlipT, fromFlipT)
     , flipmap
     , (>$<)
@@ -45,7 +49,7 @@ module Data.Functor.FlipT
     )
     where
 
-import Control.Applicative (Applicative(..))
+import Control.Applicative (Applicative(..), Const(..))
 import Control.Monad.Instances ()
 import Data.Monoid (Monoid(..))
 
@@ -82,11 +86,44 @@ instance Monad (FlipT Either a) where
     FlipT (Right x) >>= _ = FlipT (Right x)
     FlipT (Left x)  >>= f = f x
 
+instance Functor (FlipT Const s) where
+    -- :: (a -> b) -> FlipT Const s a -> FlipT Const s b
+    fmap = mapFlipT . (Const `o` getConst)
+
+instance Applicative (FlipT Const s) where
+    -- :: a -> FlipT Const s a
+    pure = FlipT . Const
+
+    -- :: FlipT Const s (a -> b) -> FlipT Const s a -> FlipT Const s b
+    FlipT (Const f) <*> x = fmap f x
+
+instance Monad (FlipT Const s) where
+    -- :: a -> FlipT Const s a
+    return = FlipT . Const
+    {-# INLINE return #-}
+
+    -- :: FlipT Const s a -> (a -> FlipT Const s b) -> FlipT Const s b
+    FlipT (Const x) >>= f = f x
+    {-# INLINE (>>=) #-}
+
+    -- :: FlipT Const s a -> FlipT Const s b -> FlipT Const s b
+    _ >> x = x
+    {-# INLINE (>>) #-}
+
 #ifdef WITH_COMONAD
 instance Comonad (FlipT (,) a) where
     duplicate (FlipT p) = FlipT (FlipT p, snd p)
     {-# INLINE duplicate #-}
     extract (FlipT p) = fst p
+    {-# INLINE extract #-}
+
+instance Comonad (FlipT Const s) where
+    -- :: FlipT Const s a -> FlipT Const s (FlipT Const s a)
+    duplicate c = FlipT $ Const c
+    {-# INLINE duplicate #-}
+
+    -- :: FlipT Const s a -> a
+    extract (FlipT (Const x)) = x
     {-# INLINE extract #-}
 #endif
 
