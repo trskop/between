@@ -39,6 +39,9 @@ module Data.Functor.FlipT
     , mapFlipT2
     , unwrapFlipT
     , unwrapFlipT2
+
+    -- * Lenses
+    , flipT
     )
     where
 
@@ -131,6 +134,7 @@ flipmap = unwrapFlipT . fmap
 (>$<) = flipmap
 infixl 4 >$<
 {-# INLINE (>$<) #-}
+-- Same fixity as (<$>) = fmap.
 
 -- | Infix variant of 'flipmap' with arguments reversed.
 --
@@ -145,6 +149,13 @@ infixl 4 >$<
 (>$$<) = flip flipmap
 infixl 4 >$$<
 {-# INLINE (>$$<) #-}
+-- Same fixity as (<$>) = fmap.
+
+-- | Lens for 'FlipT'. See /lens/ <http://hackage.haskell.org/package/lens>
+-- for details.
+flipT :: Functor f => (g a b -> f (h c d)) -> FlipT g b a -> f (FlipT h d c)
+flipT = fmap (FlipT `fmap`) . (. fromFlipT)
+{-# INLINE flipT #-}
 
 -- | Compose 'fmap'-like function from constructor and selector.
 o :: (a' -> c') -> (c -> a) -> (a -> a') -> c -> c'
