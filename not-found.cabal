@@ -59,6 +59,7 @@ library
     , Control.Monad.Conditional
     , Control.Monad.Utils
     , Data.Digits
+    , Data.Function.Between
     , Data.Functor.FlipT
     , Data.Functor.Utils
     , Data.Monoid.Endo
