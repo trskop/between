@@ -57,6 +57,9 @@ import Data.Monoid (Monoid(..))
 import Control.Comonad (Comonad(..))
 #endif
 
+import Data.Function.Between (between)
+import Data.Functor.Utils (iso)
+
 
 -- | Flip last two type variables.
 newtype FlipT f a b = FlipT {fromFlipT :: f b a}
@@ -88,7 +91,7 @@ instance Monad (FlipT Either a) where
 
 instance Functor (FlipT Const s) where
     -- :: (a -> b) -> FlipT Const s a -> FlipT Const s b
-    fmap = mapFlipT . (Const `o` getConst)
+    fmap = mapFlipT . (Const `between` getConst)
 
 instance Applicative (FlipT Const s) where
     -- :: a -> FlipT Const s a
@@ -130,26 +133,26 @@ instance Comonad (FlipT Const s) where
 -- | Lift transformation of inner functor in to transofrmation of 'FlipT'
 -- functor.
 mapFlipT :: (f a b -> g c d) -> FlipT f b a -> FlipT g d c
-mapFlipT = FlipT `o` fromFlipT
+mapFlipT = FlipT `between` fromFlipT
 {-# INLINE mapFlipT #-}
 
 -- | Variant of 'mapFlipT' for functions with arity two.
 mapFlipT2
     :: (f1 a1 b1 -> f2 a2 b2 -> f3 a3 b3)
     -> FlipT f1 b1 a1 -> FlipT f2 b2 a2 -> FlipT f3 b3 a3
-mapFlipT2 = mapFlipT `o` fromFlipT
+mapFlipT2 = mapFlipT `between` fromFlipT
 {-# INLINE mapFlipT2 #-}
 
 -- | Inverse function to 'mapFlipT'.
 unwrapFlipT :: (FlipT f a b -> FlipT g c d) -> f b a -> g d c
-unwrapFlipT = fromFlipT `o` FlipT
+unwrapFlipT = fromFlipT `between` FlipT
 {-# INLINE unwrapFlipT #-}
 
 -- | Inverse function to 'mapFlipT2'.
 unwrapFlipT2
     :: (FlipT f1 b1 a1 -> FlipT f2 b2 a2 -> FlipT f3 b3 a3)
     -> f1 a1 b1 -> f2 a2 b2 -> f3 a3 b3
-unwrapFlipT2 = unwrapFlipT `o` FlipT
+unwrapFlipT2 = unwrapFlipT `between` FlipT
 {-# INLINE unwrapFlipT2 #-}
 
 -- | Like 'fmap', but uses different instance.  Short hand for
@@ -191,10 +194,5 @@ infixl 4 >$$<
 -- | Lens for 'FlipT'. See /lens/ <http://hackage.haskell.org/package/lens>
 -- for details.
 flipT :: Functor f => (g a b -> f (h c d)) -> FlipT g b a -> f (FlipT h d c)
-flipT = fmap (FlipT `fmap`) . (. fromFlipT)
+flipT = iso FlipT fromFlipT
 {-# INLINE flipT #-}
-
--- | Compose 'fmap'-like function from constructor and selector.
-o :: (a' -> c') -> (c -> a) -> (a -> a') -> c -> c'
-f `o` g = (f .) . (. g)
-{-# INLINE o #-}

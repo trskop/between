@@ -71,13 +71,13 @@ infix 4 <<$>>
 (<<$$>>) :: Functor f => (a -> f b) -> (a -> b -> c) -> a -> f c
 (<<$$>>) = flip (<<$>>)
 infix 4 <<$$>>
-
 {-# INLINE (<<$$>>) #-}
+
 -- | Like @\\ x f -> f '<*>' 'pure' x@, but does not have 'Applicative'
 -- constraint. Flipped version of '<#>'.
 --
 -- Implemented as: @x '<##>' f = ('$' x) '<$>' f@.
-(<##>) :: (Functor f) => a -> f (a -> b) -> f b
+(<##>) :: Functor f => a -> f (a -> b) -> f b
 x <##> f = ($ x) `fmap` f
 infixl 4 <##>
 {-# INLINE (<##>) #-}
