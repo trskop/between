@@ -16,6 +16,11 @@ module Data.Monoid.FirstNonEmpty
     (
     -- * FirstNonEmpty
       FirstNonEmpty(..)
+    , mapFirstNonEmpty
+    , mapFirstNonEmpty2
+
+    -- ** Lenses
+    , firstNonEmpty
 
     -- * Monoid
     , Monoid(..)
@@ -32,6 +37,9 @@ import Data.Typeable (Typeable)
 #ifdef WITH_SEMIGROUP
 import qualified Data.Semigroup as Semigroup (Semigroup(..))
 #endif
+
+import Data.Function.Between (between)
+import Data.Functor.Utils (iso)
 
 
 newtype FirstNonEmpty a = FirstNonEmpty {getFirstNonEmpty :: a}
@@ -52,3 +60,32 @@ instance (Eq a, Monoid a) => Semigroup.Semigroup (FirstNonEmpty a) where
     times1p _ x = x
     {-# INLINEABLE times1p #-}
 #endif
+
+instance Functor FirstNonEmpty where
+    fmap = mapFirstNonEmpty
+
+-- | Lift function operating on value wrapped in 'FirstNonEmpty' to it's
+-- isomorphic counterpart operating on 'FirstNonEmpty' wrapped values.
+mapFirstNonEmpty
+    :: (a -> b)
+    -> FirstNonEmpty a
+    -> FirstNonEmpty b
+mapFirstNonEmpty = FirstNonEmpty `between` getFirstNonEmpty
+
+-- | Variant of 'mapFirstNonEmpty' for functions with arity two.
+mapFirstNonEmpty2
+    :: (a -> b -> c)
+    -> FirstNonEmpty a
+    -> FirstNonEmpty b
+    -> FirstNonEmpty c
+mapFirstNonEmpty2 = mapFirstNonEmpty `between` getFirstNonEmpty
+
+-- | Lens for 'FirstNonEmpty'.
+--
+-- See /lens/ <http://hackage.haskell.org/package/lens> package for details.
+firstNonEmpty
+    :: Functor f
+    => (a -> f b)
+    -> FirstNonEmpty a
+    -> f (FirstNonEmpty b)
+firstNonEmpty = iso FirstNonEmpty getFirstNonEmpty
