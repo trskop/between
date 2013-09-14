@@ -44,6 +44,10 @@ import Data.Functor (Functor(..), (<$>))
 import Control.Applicative ((<$), (<$>))
 #endif
 
+#ifdef WITH_COMONAD
+import Control.Comonad (($>))
+#endif
+
 import Data.Function.Between (between)
 
 
@@ -54,11 +58,19 @@ import Data.Function.Between (between)
 infixl 4 <$$>
 {-# INLINE (<$$>) #-}
 
--- | Flipped version of '<$'.
+#ifndef WITH_COMONAD
+-- Package comonad <http://hackage.haskell.org/package/comonad/> already
+-- defines this function. Following comment is partially taken from that
+-- package.
+
+-- | Replace the contents of a functor uniformly with a constant value.
+--
+-- Flipped version of '<$'.
 ($>) :: Functor f => f a -> b -> f b
 ($>) = flip (<$)
 infixl 4 $>
 {-# INLINE ($>) #-}
+#endif
 
 -- | Instead of @\\ x -> f x '<$>' g x@ this function allows to write
 -- @f '<<$>>' g@.
