@@ -2,7 +2,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Splitting numbers in to digits and vice versa.
--- Copyright:    (c) 2009, 2013 Peter Trsko
+-- Copyright:    (c) 2009, 2013, 2014 Peter Trsko
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -57,6 +57,7 @@ numberOfDigitsInBaseImpl functionName base n
     numberOfDigitsInBase# d# m = case m `quot` base of
         0 -> I# d#
         o -> numberOfDigitsInBase# (d# +# 1#) o
+{-# INLINE numberOfDigitsInBaseImpl #-}
 
 -- | Return number of digits in base 10. It's implemented in terms of
 -- 'numberOfDigitsInBase' so all it's properties apply also here.
@@ -122,6 +123,7 @@ genericDigitsInBaseImpl functionName cons o base n
       | otherwise = genericDigitsInBase' rest `o` cons d
       where
         (rest, d) = m `quotRem` base
+{-# INLINE genericDigitsInBaseImpl #-}
 
 -- | Split number in to list of digits in specified base.
 --
@@ -225,3 +227,4 @@ fromDigits = fromDigitsInBase 10
 negativeOrZeroBaseError :: String -> a
 negativeOrZeroBaseError =
     error . (++ ": Negative or zero base doesn't make sense.")
+{-# INLINE negativeOrZeroBaseError #-}
