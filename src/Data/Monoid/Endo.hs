@@ -37,6 +37,7 @@ import Data.Monoid
 #endif
     )
 
+import Data.Function.Between (between)
 import Data.Functor.FlipT (FlipT, flipmap)
 
 

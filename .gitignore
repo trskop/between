@@ -1,6 +1,4 @@
 # Linux
-.*
-!.gitignore
 *~
 
 # Haskell
