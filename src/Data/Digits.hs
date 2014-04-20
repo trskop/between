@@ -11,15 +11,21 @@
 --
 -- Functions for splitting numbers in to digits and summing them back together.
 module Data.Digits
-    ( numberOfDigitsInBase
-    , numberOfDigits
-    , genericDigitsInBase
-    , digitsInBase
+    (
+    -- * Counting Digits of a Number
+      numberOfDigits
+    , numberOfDigitsInBase
+
+    -- * Splitting Number in to Digits
     , digits
     , reverseDigits
+    , digitsInBase
     , reverseDigitsInBase
-    , fromDigitsInBase
+    , genericDigitsInBase
+
+    -- * Joining Digits to a Number
     , fromDigits
+    , fromDigitsInBase
     )
     where
 
@@ -37,7 +43,7 @@ import Data.Word (Word, Word8, Word16, Word32, Word64)
 --
 -- Some properties that hold:
 --
--- > forall b. Integral b =>
+-- > forall b. Integral b > 0 =>
 -- >     numberOfDigitsInBase b 0 = 0
 -- >     numberOfDigitsInBase b n /= 0 when n /= 0
 -- >     numberOfDigitsInBase b (negate n) = numberOfDigits b n
