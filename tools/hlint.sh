@@ -6,14 +6,19 @@ if [ -t 1 ]; then
 fi
 
 DIRS=''
-for D in 'src' 'test' 'tests'; do
-    if [ -d "$D" ]; then
-        if [ -z "$DIRS" ]; then
-            DIRS="$D"
-        else
-            DIRS="$DIRS $D"
+for PKG in '' not-found*; do
+    for D in 'src' 'test' 'tests'; do
+        if [ -n "$PKG" ]; then
+            D="$PKG/$D"
         fi
-    fi
+        if [ -d "$D" ]; then
+            if [ -z "$DIRS" ]; then
+                DIRS="$D"
+            else
+                DIRS="$DIRS $D"
+            fi
+        fi
+    done
 done
 
 # Use current directory if no known subdirectories with source code were found.
@@ -21,4 +26,4 @@ if [ -z "$DIRS" ]; then
     DIRS='.'
 fi
 
-hlint $HLINT_FLAGS .
+hlint $HLINT_FLAGS $DIRS

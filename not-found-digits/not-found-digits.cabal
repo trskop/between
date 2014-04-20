@@ -1,4 +1,4 @@
-name:                   not-found
+name:                   not-found-digits
 version:                0.8.0.0
 synopsis:
   Functions (mostly one-liners) and types that aren't in base.
@@ -25,7 +25,7 @@ license:                BSD3
 license-file:           LICENSE
 author:                 Peter Trško
 maintainer:             peter.trsko@gmail.com
-copyright:              (c) 2009, 2011 - 2013 Peter Trško
+copyright:              (c) 2009, 2011 - 2014 Peter Trško
 category:               Control, Data
 build-type:             Simple
 cabal-version:          >=1.8
@@ -39,42 +39,12 @@ flag pedantic
     Pass additional warning flags including -Werror to GHC during compilation.
   default: False
 
-flag with-comonad
-  description:
-    Adds comonad to the list of dependencies and builds Comonad instances for
-    various types.
-  default: True
-
-flag with-semigroups
-  description:
-    Adds semigroups to the list of dependencies and builds Semigroup instances
-    for various types. Implied by -fwith-comonad.
-  default: True
-
 library
   hs-source-dirs:       src
-  exposed-modules:
-      Control.Applicative.LiftUtils
-    , Control.Applicative.Predicate
-    , Control.Monad.Conditional
-    , Control.Monad.Utils
-    , Data.Digits
-    , Data.Function.Between
-    , Data.Functor.FlipT
-    , Data.Functor.Utils
-    , Data.Monoid.Endo
-    , Data.Monoid.FirstNonEmpty
-    , Data.Monoid.LastNonEmpty
+  exposed-modules:      Data.Digits
   -- other-modules:
 
   build-depends:        base > 3 && < 5
-  if flag(with-comonad)
-    build-depends:      comonad >= 3.0.1.1 && < 4
-    cpp-options:        -DWITH_COMONAD
-  if flag(with-comonad) || flag(with-semigroups)
-    build-depends:      semigroups >= 0.8.3 && < 1
-    -- ^ Version range taken from comonad-3.0.2.
-    cpp-options:        -DWITH_SEMIGROUPS
 
   ghc-options:          -Wall
   if impl(ghc >= 6.8)
@@ -87,22 +57,9 @@ test-suite not-found-unit-tests
   type:                 exitcode-stdio-1.0
   main-is:              unit-tests-main.hs
   other-modules:
-      Control.Applicative.LiftUtils
-    , Control.Applicative.Predicate
-    , Control.Monad.Conditional
-    , Control.Monad.Utils
-    , Data.Digits
-    , Data.Functor.FlipT
-    , Data.Functor.Utils
-    , Data.Monoid.Endo
-    , Data.Monoid.FirstNonEmpty
-    , Data.Monoid.LastNonEmpty
+      Data.Digits
     , TestCase
     , TestCase.Data.Digits
-    , TestCase.Data.Functor.FlipT
-    , TestCase.Data.Functor.Utils
-    , TestCase.Data.Monoid.FirstNonEmpty
-    , TestCase.Data.Monoid.LastNonEmpty
 
   build-depends:
       base > 3 && < 5
@@ -124,13 +81,6 @@ test-suite not-found-unit-tests
       -- Not required right now:
  -- , test-framework-skip == 1.*
       -- ^ Currently there is only version 1.0.
-  if flag(with-comonad)
-    build-depends:      comonad >= 3.0.1.1 && < 4
-    cpp-options:        -DWITH_COMONAD
-  if flag(with-comonad) || flag(with-semigroups)
-    build-depends:      semigroups >= 0.8.3 && < 1
-    -- ^ Version range taken from comonad-3.0.2.
-    cpp-options:        -DWITH_SEMIGROUPS
 
   ghc-options:          -Wall
   if impl(ghc >= 6.8)

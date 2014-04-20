@@ -11,8 +11,8 @@ real world applications. One of the aspects of coding for user applications is
 that this library doesn't shy away from sensible language extensions.
 
 
-Dependencies
-------------
+External Dependencies
+---------------------
 
 * [*comonad*][comonad] (optional) -- Haskell 98 compatible comonads
 * [*semigroups*][semigroups] (optional) -- Haskell 98 semigroups
