@@ -18,6 +18,7 @@ module Data.Monoid.Endo
     , Endo(..)
     , runEndo
     , mapEndo
+    , mapEndo2
     , liftEndo
     , flipLiftEndo
 
@@ -48,6 +49,11 @@ type E a = a -> a
 mapEndo :: (E a -> E b) -> Endo a -> Endo b
 mapEndo = Endo `between` appEndo
 {-# INLINE mapEndo #-}
+
+-- | Variation of 'mapEndo' for functions with arity two.
+mapEndo2 :: (E a -> E b -> E c) -> Endo a -> Endo b -> Endo c
+mapEndo2 = mapEndo `between` appEndo
+{-# INLINE mapEndo2 #-}
 
 -- | Apply 'fmap' to function wrapped in 'Endo'. It's a short hand for
 -- @'mapEndo' 'fmap'@.
