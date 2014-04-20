@@ -3,7 +3,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Utilities for Endo data type.
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2014 Peter Trsko
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -14,7 +14,8 @@
 module Data.Monoid.Endo
     (
     -- * Endo
-      Endo(..)
+      E
+    , Endo(..)
     , runEndo
     , mapEndo
     , liftEndo
@@ -39,9 +40,12 @@ import Data.Monoid
 import Data.Functor.FlipT (FlipT, flipmap)
 
 
+-- | Type synonym for endomorphsm; it can be used simplify type signatures.
+type E a = a -> a
+
 -- | Transform function wrapped in 'Endo'.
-mapEndo :: ((a -> a) -> b -> b) -> Endo a -> Endo b
-mapEndo f (Endo g) = Endo (f g)
+mapEndo :: (E a -> E b) -> Endo a -> Endo b
+mapEndo = Endo `between` appEndo
 {-# INLINE mapEndo #-}
 
 -- | Apply 'fmap' to function wrapped in 'Endo'. It's a short hand for
