@@ -1,7 +1,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Function between and variations.
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2014 Peter Trsko
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -20,7 +20,7 @@ module Data.Function.Between
     --
     -- $mapNewtypeExample
 
-    -- * Between function combinator
+    -- * Between Function Combinator
     --
     -- | Captures common pattern of @\ g -> (f . g . h)@ where @f@ and @h@ are
     -- fixed parameters.
@@ -40,7 +40,7 @@ between f g = (f .) . (. g)
 
 -- | Defined as @\\ f g -> (f \`between\` g) \`between\` g@.
 --
--- > flip (between2l id) = Data.Function.on
+-- > (id `between2l`) = flip (between2l id) = Data.Function.on
 between2l :: (c -> d) -> (a -> b) -> (b -> b -> c) -> a -> a -> d
 between2l f g = (f `between` g) `between` g
 {-# INLINE between2l #-}
@@ -55,7 +55,7 @@ between3l f g = (f `between2l` g) `between` g
 --
 -- > (f . h) `between` (i . g) = (f `between` g) . (h `between` i)
 --
--- This shows us that is possible to define @f `between` g@ and
+-- This shows us that it is possible to define @f `between` g@ and
 -- @h \`between\` i@ separately, for reusability, and then compose them.
 --
 -- > (f `between` funOnX) `between` funOnY
@@ -74,7 +74,7 @@ between3l f g = (f `between2l` g) `between` g
 -- its first argument:
 --
 -- > on3 :: (b -> b -> b -> d) -> (a -> b) -> a -> a -> a -> d
--- > on f g = (id `between` g `between` g `between` g) f
+-- > on3 f g = (id `between` g `between` g `between` g) f
 --
 -- Another interesting situation is when @f@ and @g@ in @f \`between\` g@ form
 -- an isomorphism. We then can construct a mapping function that takes function
@@ -84,7 +84,7 @@ between3l f g = (f `between2l` g) `between` g
 --
 -- Simplicity of how 'between' combinator can be used to define set of
 -- functions by reusing previous definitions makes it also very suitable for
--- usage in TemplateHaskell.
+-- usage in TemplateHaskell and generic programming.
 
 -- $mapNewtypeExample
 --
