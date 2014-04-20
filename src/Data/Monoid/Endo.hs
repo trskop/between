@@ -22,6 +22,9 @@ module Data.Monoid.Endo
     , liftEndo
     , flipLiftEndo
 
+    -- ** Lens
+    , endo
+
     -- * Monoid
     , Monoid(..)
 #if MIN_VERSION_base(4,5,0)
@@ -40,6 +43,7 @@ import Data.Monoid
 
 import Data.Function.Between (between)
 import Data.Functor.FlipT (FlipT, flipmap)
+import Data.Functor.Utils (iso)
 
 
 -- | Type synonym for endomorphsm; it can be used simplify type signatures.
@@ -71,3 +75,10 @@ flipLiftEndo (Endo f) = Endo (flipmap f)
 runEndo :: a -> Endo a -> a
 runEndo x (Endo f) = f x
 {-# INLINE runEndo #-}
+
+-- | Lens for 'Endo'. In terms of /lens/ package it would have type:
+--
+-- > endo :: Lens (Endo a) (Endo b) (E a) (E b)
+endo :: Functor f => (E a -> f (E b)) -> Endo a -> f (Endo b)
+endo = iso Endo appEndo
+{-# INLINE endo #-}
