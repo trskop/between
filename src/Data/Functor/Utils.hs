@@ -2,7 +2,7 @@
 -- |
 -- Module      :  $HEADER$
 -- Description :  Utility functions for Functors
--- Copyright   :  (c) 2011, 2013 Peter Trsko
+-- Copyright   :  (c) 2011, 2013, 2014 Peter Trsko
 -- License     :  BSD3
 --
 -- Maintainer  :  peter.trsko@gmail.com
@@ -119,11 +119,21 @@ infixl 4 <#>
 -- | Create /lens/ from @f@ and @g@ that form an isomorphism.
 --
 -- Defined as: @iso f g = fmap f \`between\` g@
+--
+-- Name colides with
+--
+-- > iso :: (s -> a) -> (b -> t) -> Iso s t a b
+--
+-- Defined in /lens/ <http://hackage.haskell.org/package/lens> package as of
+-- version 0.1.
 iso :: (Functor f) => (c -> d) -> (a -> b) -> (b -> f c) -> a -> f d
 iso = between . fmap
 {-# INLINE iso #-}
 
 -- | Construct /lens/ from @r -> (a, a -> r)@-style lens.
+--
+-- Name colides with a lot of lens-like packages including /lens/
+-- <http://hackage.haskell.org/package/lens> package as of version 0.1.
 lens :: Functor f => (r -> (a, a -> r)) -> (a -> f a) -> r -> f r
 lens getSetItem f = setItemIn <<$>> f . getItemFrom
   where
