@@ -4,7 +4,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Flip arguments of a type.
--- Copyright:    (c) 2013 Peter Trsko
+-- Copyright:    (c) 2013, 2014 Peter Trsko
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -43,6 +43,8 @@ module Data.Functor.FlipT
     , mapFlipT2
     , unwrapFlipT
     , unwrapFlipT2
+    , withFlip
+    , withFlip2
 
     -- * Lenses
     , flipT
@@ -155,7 +157,23 @@ unwrapFlipT2
 unwrapFlipT2 = unwrapFlipT `between` FlipT
 {-# INLINE unwrapFlipT2 #-}
 
--- | Like 'fmap', but uses different instance.  Short hand for
+-- | Take function that expects @'FlipT' f a b@ as its argument and return
+-- function that takes unwrapped @f b a@ instead.
+--
+-- This function can be used in situations when we expect function to use
+-- instance for @'FlipT' f a b@ instad of instance for @f b a@, in example:
+--
+-- > withFlip extract :: Comonad (FlipT f a) => f c a -> c
+withFlip :: (FlipT f a b -> c) -> f b a -> c
+withFlip = (. FlipT) -- = id `between` FlipT
+{-# INLINE withFlip #-}
+
+-- | As 'withFlip', but unwraps first two arguments for specified function.
+withFlip2 :: (FlipT f a b -> FlipT g c d -> e) -> f b a -> g d c -> e
+withFlip2 = withFlip `between` FlipT
+{-# INLINE withFlip2 #-}
+
+-- | Like 'fmap', but uses flipped Functor instance.  Short hand for
 -- @'unwrapFlipT' . 'fmap'@.
 flipmap :: Functor (FlipT f a) => (b -> c) -> f b a -> f c a
 flipmap = unwrapFlipT . fmap
@@ -191,8 +209,12 @@ infixl 4 >$$<
 {-# INLINE (>$$<) #-}
 -- Same fixity as (<$>) = fmap.
 
--- | Lens for 'FlipT'. See /lens/ <http://hackage.haskell.org/package/lens>
--- for details.
+-- | Lens for 'FlipT'. Using type definition from /lens/ package this function
+-- would have type:
+--
+-- > flipT :: Lens (FlipT g b a) (FlipT h d c) (g a b) (h c d)
+--
+-- See /lens/ <http://hackage.haskell.org/package/lens> package for details.
 flipT :: Functor f => (g a b -> f (h c d)) -> FlipT g b a -> f (FlipT h d c)
 flipT = iso FlipT fromFlipT
 {-# INLINE flipT #-}
