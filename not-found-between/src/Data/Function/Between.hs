@@ -45,6 +45,10 @@ module Data.Function.Between
     --
     -- $mappingFunctionsForNewtypes
 
+    -- * Constructing lenses
+    --
+    -- $lenses
+
     -- * Between Function Combinator
     --
     -- | Captures common pattern of @\\g -> (f . g . h)@ where @f@ and @h@ are
@@ -54,6 +58,8 @@ module Data.Function.Between
     , (<@@>)
 
     -- ** Derived Combinators
+    , (<$@>)
+    , (<@@$>)
     , between2l
     , between3l
     )
@@ -86,6 +92,33 @@ infixl 8 <@>
 (<@@>) = flip between
 infixr 8 <@@>
 {-# INLINE (<@@>) #-}
+
+-- | Convenience wrapper for: @\\f g -> 'fmap' f '<@>' g@.
+--
+-- It allows us to define lenses mostly for pair of functions that form an
+-- isomorphism.
+--
+-- Name of '<$@>' simply says that we apply @\<$\>@ ('fmap') to first (left)
+-- argument and then we apply '<@>'.
+--
+-- Fixity is left associative and set to value 8, which is one less then fixity
+-- of function composition ('.').
+(<$@>) :: Functor f => (c -> d) -> (a -> b) -> (b -> f c) -> a -> f d
+(<$@>) = between . fmap
+infixl 8 <$@>
+{-# INLINE (<$@>) #-}
+
+-- | Flipped variant of '<$@>'.
+--
+-- Name of '<@@$>' simply says that we apply @\<$\>@ ('fmap') to second (right)
+-- argument and then we apply '<@@>'.
+--
+-- Fixity is left associative and set to value 8, which is one less then fixity
+-- of function composition ('.').
+(<@@$>) :: Functor f => (a -> b) -> (c -> d) -> (b -> f c) -> a -> f d
+(<@@$>) = flip $ between . fmap
+infixl 8 <@@$>
+{-# INLINE (<@@$>) #-}
 
 -- | Defined as: @\\f g -> (f '<@>' g) '<@>' g@.
 --
@@ -213,3 +246,46 @@ between3l f g = ((f `between` g) `between` g) `between` g
 -- >     :: (m1 (Either e1 a) -> m2 (Either e2 b) -> m3 (Either e3 c))
 -- >     -> ErrorT e1 m1 a -> ErrorT e2 m2 b -> ErrorT e3 m3 c
 -- > mapErrorT2 = mapErrorT <@> runErrorT
+
+-- $lenses
+--
+-- Library /lens/ is notorious for its huge list of (mostly transitive)
+-- dependencies. However it is easy to define a lot of things without the need
+-- to depend on /lens/ directly. This module defines few functions that will
+-- make it even easier.
+--
+-- Lens for a simple newtype:
+--
+-- > newtype T a = T {fromT :: a}
+-- >
+-- > t :: Functor f => (a -> f b) -> T a -> f (T b)
+-- > t = fmap T <@> fromT
+--
+-- To simplify things we provide function '<$@>' for it:
+--
+-- > t :: Functor f => (a -> f b) -> T a -> f (T b)
+-- > t = T <$@> fromT
+--
+-- Definition of lens for generic data type is little more cumbersome:
+--
+-- > data D a b = D {_x :: a, _y :: b}
+-- >
+-- > x :: Functor f => (a -> f b) -> D a c -> f (D b c)
+-- > -- x :: Lens (D a c) (D b c) a b
+-- > x f s = ((\b -> s{_x = b}) <$@> _x) f s
+-- >
+-- > y :: Functor f => (a -> f b) -> D c a -> f (D c b)
+-- > -- y :: Lens (D c a) (D c b) a b
+-- > y f s = ((\b -> s{_y = b}) <$@> _y) f s
+--
+-- Above example shows us that we are able to define function equivalent to
+-- @lens@ from /lens/ package as follows:
+--
+-- > lens
+-- >     :: (s -> a)
+-- >     -- ^ Selector function.
+-- >     -> (s -> b -> t)
+-- >     -- ^ Setter function.
+-- >     -> (forall f. Functor f => (a -> f b) -> s -> f t)
+-- >     -- ^ In /lens/ terms this is @Lens s t a b@
+-- > lens get set f s = (set s <$@> get) f s
