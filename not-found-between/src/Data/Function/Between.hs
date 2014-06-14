@@ -59,6 +59,8 @@ module Data.Function.Between
     )
     where
 
+import Prelude (Functor(fmap), (.), ($), flip, id)
+
 
 -- | Defined as: @\\ f g -> (f .) . (. g)@.
 between :: (c -> d) -> (a -> b) -> (b -> c) -> a -> d
