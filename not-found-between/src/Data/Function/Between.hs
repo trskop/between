@@ -14,15 +14,15 @@
 -- overkill for some purposes.
 --
 -- This module describes simple and composable combinators that are built on
--- top of very basic concept of:
+-- top of very basic concept:
 --
 -- @f '.' h '.' g@
 --
--- where @f@ and @g@ are fixed. It is possible to reduce it to just:
+-- Where @f@ and @g@ are fixed. It is possible to reduce it to just:
 --
 -- @(f '.') '.' ('.' g)@
 --
--- which is the core pattern used by all functions defined in this module.
+-- Which is the core pattern used by all functions defined in this module.
 --
 -- Trying to generalize this pattern furhter ends as:
 -- @(f \<$\>) '.' (\<$\> g)@, where @\<$\> = 'fmap'@. Other combinations of
@@ -88,6 +88,9 @@ infixl 8 <@>
 {-# INLINE (<@>) #-}
 
 -- | Flipped variant of '<@>', i.e. flipped infix variant of 'between'.
+--
+-- Fixity is right associative and set to value 8, which is one less then
+-- fixity of function composition ('.').
 (<@@>) :: (a -> b) -> (c -> d) -> (b -> c) -> a -> d
 (<@@>) = flip between
 infixr 8 <@@>
@@ -113,11 +116,11 @@ infixl 8 <$@>
 -- Name of '<@@$>' simply says that we apply @\<$\>@ ('fmap') to second (right)
 -- argument and then we apply '<@@>'.
 --
--- Fixity is left associative and set to value 8, which is one less then fixity
--- of function composition ('.').
+-- Fixity is right associative and set to value 8, which is one less then
+-- fixity of function composition ('.').
 (<@@$>) :: Functor f => (a -> b) -> (c -> d) -> (b -> f c) -> a -> f d
 (<@@$>) = flip $ between . fmap
-infixl 8 <@@$>
+infixr 8 <@@$>
 {-# INLINE (<@@$>) #-}
 
 -- | Defined as: @\\f g -> (f '<@>' g) '<@>' g@.
@@ -140,7 +143,7 @@ between3l f g = ((f `between` g) `between` g) `between` g
 --
 -- > (f . h) <@> (i . g) === (f <@> g) . (h <@> i)
 --
--- This shows us that it is possible to define @f '<@>' g@ and @h '<@>' i@
+-- This shows us that it is possible to define @(f '<@>' g)@ and @(h '<@>' i)@
 -- separately, for reusability, and then compose them.
 --
 -- The fun doesn't end on functions that take just one parameter, because '<@>'
@@ -150,7 +153,7 @@ between3l f g = ((f `between` g) `between` g) `between` g
 -- >     === \g x y -> f (g (funOnX x) (funOnY y))
 --
 -- As you can se above @g@ is a function that takes two parameters. Now we can
--- define @f '<@>' funOnX@ separately, then when ever we need we can extend it
+-- define @(f '<@>' funOnX)@ separately, then when ever we need we can extend it
 -- to higher arity function by appending @('<@>' funOnY)@. Special case when
 -- @funOnY = funOnX@ is very interesting, in example function
 -- @Data.Function.on@ can be defined using 'between' as:
@@ -166,7 +169,7 @@ between3l f g = ((f `between` g) `between` g) `between` g
 -- > on3 f g = (id <@> g <@> g <@> g) f
 -- >     -- or (. g) <@> g <@> g
 --
--- Another interesting situation is when @f@ and @g@ in @f '<@>' g@ form an
+-- Another interesting situation is when @f@ and @g@ in @(f '<@>' g)@ form an
 -- isomorphism. Then we can construct a mapping function that takes function
 -- operating on one type and transform it in to a function that operates on a
 -- different type. As we shown before it is also possible to map functions with
@@ -178,10 +181,10 @@ between3l f g = ((f `between` g) `between` g) `between` g
 
 -- $mappingFunctionsForNewtypes
 --
--- When we use @f '<@>' g@ where @f@ and @g@ form an isomorphism of two types,
--- and if @f@ is a constructor and @g@ a selector of newtype, then @f '<@>' g@
--- is a mapping function that allows us to manipulate value wrapped inside a
--- newtype.
+-- When we use @(f '<@>' g)@ where @f@ and @g@ form an isomorphism of two
+-- types, and if @f@ is a constructor and @g@ a selector of newtype, then
+-- @(f '<@>' g)@ is a mapping function that allows us to manipulate value
+-- wrapped inside a newtype.
 --
 -- > newtype T t a = T {fromT :: a}
 -- >
@@ -206,6 +209,18 @@ between3l f g = ((f `between` g) `between` g) `between` g
 -- >     -> T t1 a -> T t2 b -> T t3 c -> T t4 d
 -- > mapT3 = mapT2 <@> fromT
 --
+-- Dually to definition of 'mapT' and 'mapT2' we can also define:
+--
+-- > comapT :: (T a -> T b) -> a -> b
+-- > comapT = fromT <@> T
+-- >     -- or T <@@> fromT
+-- >
+-- > comapT2 :: (T a -> T b -> T c) -> a -> b -> c
+-- > comapT2 = fromT <@> T <@> T
+-- >     -- or comapT <@> T
+-- >     -- or T <@@> T <@@> fromT
+-- >     -- or T <@@> comapT
+--
 -- Here is another example with a little more complex type wrapped inside a
 -- newtype:
 --
@@ -220,18 +235,6 @@ between3l f g = ((f `between` g) `between` g) `between` g
 -- >     :: (Either e1 a -> Either e2 b -> Either e3 c)
 -- >     -> T e1 a -> T e2 b -> T e3 c
 -- > mapT2 = mapT <@> fromT
---
--- Dually to definition of 'mapT' and 'mapT2' we can also define:
---
--- > comapT :: (T a -> T b) -> a -> b
--- > comapT = fromT <@> T
--- >     -- or T <@@> fromT
--- >
--- > comapT2 :: (T a -> T b -> T c) -> a -> b -> c
--- > comapT2 = fromT <@> T <@> T
--- >     -- or comapT <@> T
--- >     -- or T <@@> T <@@> fromT
--- >     -- or T <@@> comapT
 --
 -- This last example is typical for monad transformers:
 --
