@@ -64,6 +64,11 @@ module Data.Function.Between
 between :: (c -> d) -> (a -> b) -> (b -> c) -> a -> d
 between f g = (f .) . (. g)
 {-# INLINE between #-}
+{-# RULES
+"id/between/id"            between id id = id
+"id/between"     forall f. between id f  = (. f)
+"between/id"     forall f. between f  id = (f .)
+  #-}
 
 -- | Infix variant of 'between'.
 --
