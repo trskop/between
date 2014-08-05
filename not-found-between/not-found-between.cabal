@@ -1,7 +1,6 @@
 name:                   not-found-between
-version:                0.8.0.0
-synopsis:
-  Functions (mostly one-liners) and types that aren't in base.
+version:                0.8.1.0
+synopsis:               "Between" function combinator.
 description:
   Over the years of their work Haskellers tend to create a lot of small
   utilities and types that they use in various places. It's not uncommon that

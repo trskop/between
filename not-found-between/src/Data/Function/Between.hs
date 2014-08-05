@@ -33,7 +33,7 @@
 -- >     :: Functor f => (b -> c) -> f a -> (a -> b) -> f c
 --
 -- Which doesn't give us much more power. Instead of going for such
--- generalization we kept the original @(f '.') '.' ('.' g)@ which we named
+-- generalization we kept the original @((f '.') '.' ('.' g))@ which we named
 -- 'between' or '<@>' in its infix form.
 module Data.Function.Between
     (
@@ -41,11 +41,11 @@ module Data.Function.Between
     --
     -- $composability
 
-    -- * Mapping functions for newtypes
+    -- * Mapping Functions For Newtypes
     --
     -- $mappingFunctionsForNewtypes
 
-    -- * Constructing lenses
+    -- * Constructing Lenses
     --
     -- $lenses
 
@@ -73,9 +73,9 @@ between :: (c -> d) -> (a -> b) -> (b -> c) -> a -> d
 between f g = (f .) . (. g)
 {-# INLINE between #-}
 {-# RULES
-"id/between/id"            between id id = id
-"id/between"     forall f. between id f  = (. f)
-"between/id"     forall f. between f  id = (f .)
+"id/between/id"             between id id = id
+"id/between"      forall f. between id f  = (. f)
+"between/id"      forall f. between f  id = (f .)
   #-}
 
 -- | Infix variant of 'between'.
@@ -104,7 +104,6 @@ infixr 8 <@@>
 -- Name of '<$@>' simply says that we apply @\<$\>@ ('fmap') to first (left)
 -- argument and then we apply '<@>'.
 --
--- Fixity is left associative and set to value 8, which is one less then fixity
 -- of function composition ('.').
 (<$@>) :: Functor f => (c -> d) -> (a -> b) -> (b -> f c) -> a -> f d
 (<$@>) = between . fmap
@@ -149,25 +148,64 @@ between3l f g = ((f `between` g) `between` g) `between` g
 -- The fun doesn't end on functions that take just one parameter, because '<@>'
 -- lets you build up things like:
 --
--- > (f <@> funOnX) <@> funOnY
+-- > (f <@> funOnY) <@> funOnX
 -- >     === \g x y -> f (g (funOnX x) (funOnY y))
 --
 -- As you can se above @g@ is a function that takes two parameters. Now we can
--- define @(f '<@>' funOnX)@ separately, then when ever we need we can extend it
--- to higher arity function by appending @('<@>' funOnY)@. Special case when
+-- define @(f '<@>' funOnY)@ separately, then when ever we need we can extend it
+-- to higher arity function by appending @('<@>' funOnX)@. Special case when
 -- @funOnY = funOnX@ is very interesting, in example function
 -- @Data.Function.on@ can be defined using 'between' as:
 --
 -- > on :: (b -> b -> c) -> (a -> b) -> a -> a -> c
 -- > on f g = (id <@> g <@> g) f
--- >     -- or (. g) <@> g
+-- >     -- or: ((. g) <@> g) f
 --
 -- We can also define function @on3@ that takes function with arity three as
 -- its first argument:
 --
 -- > on3 :: (b -> b -> b -> d) -> (a -> b) -> a -> a -> a -> d
 -- > on3 f g = (id <@> g <@> g <@> g) f
--- >     -- or (. g) <@> g <@> g
+-- >     -- or: ((. g) <@> g <@> g) f
+--
+-- If we once again consider generalizing above examples by using three
+-- different functions @g1 =\/= g2 =\/= g3@ instead of just one @g@ then we get:
+--
+-- > on' :: (b -> b1 -> c)
+-- >     -> (a2 -> b2)
+-- >     -> (a1 -> b1)
+-- >     -> a1 -> a2 -> c
+-- > on' f g1 g2 = (id <@> g2 <@> g1) f
+-- >
+-- > on3'
+-- >     :: (b1 -> b2 -> b3 -> c)
+-- >     -> (a3 -> b3)
+-- >     -> (a2 -> b2)
+-- >     -> (a1 -> b1)
+-- >     -> a1 -> a2 -> a3 -> c
+-- > on3' f g1 g2 g3 = (id <@> g3 <@> g2 <@> g1) f
+--
+-- Which allows us to interpret '<@>' in terms like \"apply this function to the
+-- n-th argument before passing it to the function @f@\". We just have to count
+-- the arguments backwards. In example if want to apply function @g@ to third
+-- argument, but no other then we can use:
+--
+-- > \g f -> (id <@> g <@> id <@> id) f
+-- >     --   ^      ^     ^      ^- Applied to the first argument.
+-- >     --   |      |     '- Applied to the second argument.
+-- >     --   |      '- Applied to the third argument.
+-- >     --   '- Applied to the result.
+-- >     :: (a3 -> b3) -> (a1 -> a2 -> b3 -> c) -> a1 -> a2 -> a3 -> c
+--
+-- Or we can use '<@@>', which is just flipped version of '<@>' and then it
+-- would be:
+--
+-- > \g f -> (id <@@> id <@@> g <@@> id) f
+-- >     --   ^       ^       ^      ^- Applied to the result.
+-- >     --   |       |       '- Applied to the third argument.
+-- >     --   |       '- Applied to the second argument.
+-- >     --   '- Applied to the first argument.
+-- >     :: (a3 -> b3) -> (a1 -> a2 -> b3 -> c) -> a1 -> a2 -> a3 -> c
 --
 -- Another interesting situation is when @f@ and @g@ in @(f '<@>' g)@ form an
 -- isomorphism. Then we can construct a mapping function that takes function
@@ -203,23 +241,28 @@ between3l f g = ((f `between` g) `between` g) `between` g
 -- >     :: (a -> b -> c)
 -- >     -> T t1 a -> T t2 b -> T t3 c
 -- > mapT2 = mapT <@> fromT
+-- >     -- or: T <@> fromT <@> fromT
+-- >     -- or: mapT `between2l` fromT
 -- >
 -- > mapT3
 -- >     :: (a -> b -> c -> d)
 -- >     -> T t1 a -> T t2 b -> T t3 c -> T t4 d
 -- > mapT3 = mapT2 <@> fromT
+-- >     -- or: T <@> fromT <@> fromT <@> fromT
+-- >     -- or: mapT `between3l` fromT
 --
 -- Dually to definition of 'mapT' and 'mapT2' we can also define:
 --
 -- > comapT :: (T a -> T b) -> a -> b
 -- > comapT = fromT <@> T
--- >     -- or T <@@> fromT
+-- >     -- or: T <@@> fromT
 -- >
 -- > comapT2 :: (T a -> T b -> T c) -> a -> b -> c
 -- > comapT2 = fromT <@> T <@> T
--- >     -- or comapT <@> T
--- >     -- or T <@@> T <@@> fromT
--- >     -- or T <@@> comapT
+-- >     -- or: comapT <@> T
+-- >     -- or: T <@@> T <@@> fromT
+-- >     -- or: T <@@> comapT
+-- >     -- or: fromT `between2l` T
 --
 -- Here is another example with a little more complex type wrapped inside a
 -- newtype:
