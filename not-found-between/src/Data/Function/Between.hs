@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 -- |
 -- Module:       $HEADER$
 -- Description:  Function combinator "between" and its variations.
@@ -63,9 +64,10 @@ module Data.Function.Between
     , between2l
     , between3l
     )
-    where
+  where
 
-import Prelude (Functor(fmap), (.), ($), flip, id)
+import Data.Functor (Functor(fmap))
+import Data.Function ((.), flip, id)
 
 
 -- | Defined as: @\\ f g -> (f .) . (. g)@.
@@ -118,7 +120,7 @@ infixl 8 <$@>
 -- Fixity is right associative and set to value 8, which is one less then
 -- fixity of function composition ('.').
 (<@@$>) :: Functor f => (a -> b) -> (c -> d) -> (b -> f c) -> a -> f d
-(<@@$>) = flip $ between . fmap
+(<@@$>) = flip (<$@>)
 infixr 8 <@@$>
 {-# INLINE (<@@$>) #-}
 
