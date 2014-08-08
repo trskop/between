@@ -1,16 +1,18 @@
 name:                   not-found-between
-version:                0.8.1.0
-synopsis:               "Between" function combinator.
+version:                0.9.0.0
+synopsis:               Function combinator "between" and derived combinators
 description:
-  Over the years of their work Haskellers tend to create a lot of small
-  utilities and types that they use in various places. It's not uncommon that
-  such patchworks are published as a small, and also not so small, libraries.
-  This library is one of those, and we will see in what category it ends up
-  over time.
+  It turns out that this combinator
   .
-  All functions, types and instances in this library were at some point used in
-  real world applications. One of the aspects of coding for user applications
-  is that this library doesn't shy away from sensible language extensions.
+  > f ~@~ g = (f .) . (. g)
+  .
+  is a powerful thing. It was abstracted from following (commonly used)
+  pattern @f . h . g@ where @f@ and @g@ are fixed.
+  .
+  This library not only defines @~\@~@ combinator, but also a some derived
+  combinators that can help us to easily define a lot of things including
+  lenses. See <http://hackage.haskell.org/package/lens lens package> for
+  detais on what lenses are.
   .
   README and ChangeLog can be found in source code package and on GitHub:
   .
