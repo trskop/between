@@ -54,3 +54,8 @@ library
 source-repository head
   type:                 git
   location:             git://github.com/trskop/between.git
+
+source-repository this
+  type:                 git
+  location:             git://github.com/trskop/between.git
+  tag:                  v0.9.0.0
