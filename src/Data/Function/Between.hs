@@ -67,6 +67,9 @@ module Data.Function.Between
     , (^@^)
     , (^@@^)
 
+    , between2l
+    , between3l
+
     -- ** Lifted Combinators
     --
     -- Combinators based on '~@~', '^@~', '^@^', and their flipped variants,
@@ -81,6 +84,9 @@ module Data.Function.Between
     , (~@~>)
     , (<~@@~)
 
+    , (<^@~)
+    , (~@@^>)
+
     , (<^@^>)
     , (<^@@^>)
 
@@ -89,12 +95,6 @@ module Data.Function.Between
 
     , (^@^>)
     , (<^@@^)
-
-    , (<^@~)
-    , (~@@^>)
-
-    , between2l
-    , between3l
     )
   where
 
@@ -201,6 +201,42 @@ infix 8 ^@^
 (^@@^) = flip (^@^)
 infix 8 ^@@^
 {-# INLINE (^@@^) #-}
+
+-- | Apply function @g@ to each argument of binary function and @f@ to its
+-- result. In suffix \"2l\" the number is equal to arity of the function it
+-- accepts as a third argument and character \"l\" is for \"left associative\".
+--
+-- @
+-- 'between2l' f g = (f '~@~' g) '~@~' g
+-- @
+--
+-- Interesting observation:
+--
+-- @
+-- (\\f g -> 'between2l' 'id' g f) === 'Data.Function.on'
+-- @
+between2l :: (c -> d) -> (a -> b) -> (b -> b -> c) -> a -> a -> d
+between2l f g = (f `between` g) `between` g
+{-# INLINE between2l #-}
+
+-- | Apply function @g@ to each argument of ternary function and @f@ to its
+-- result. In suffix \"3l\" the number is equal to arity of the function it
+-- accepts as a third argument and character \"l\" is for \"left associative\".
+--
+-- This function is defined as:
+--
+-- @
+-- 'between3l' f g = ((f '~@~' g) '~@~' g) '~@~' g
+-- @
+--
+-- Alternatively it can be defined using 'between2l':
+--
+-- @
+-- 'between3l' f g = 'between2l' f g '~@~' g
+-- @
+between3l :: (c -> d) -> (a -> b) -> (b -> b -> b -> c) -> a -> a -> a -> d
+between3l f g = ((f `between` g) `between` g) `between` g
+{-# INLINE between3l #-}
 
 -- | Convenience wrapper for:
 --
@@ -438,42 +474,6 @@ infix 8 ^@^>
 (<^@@^) = flip (^@^>)
 infix 8 <^@@^
 {-# INLINE (<^@@^) #-}
-
--- | Apply function @g@ to each argument of binary function and @f@ to its
--- result. In suffix \"2l\" the number is equal to arity of the function it
--- accepts as a third argument and character \"l\" is for \"left associative\".
---
--- @
--- 'between2l' f g = (f '~@~' g) '~@~' g
--- @
---
--- Interesting observation:
---
--- @
--- (\\f g -> 'between2l' 'id' g f) === 'Data.Function.on'
--- @
-between2l :: (c -> d) -> (a -> b) -> (b -> b -> c) -> a -> a -> d
-between2l f g = (f `between` g) `between` g
-{-# INLINE between2l #-}
-
--- | Apply function @g@ to each argument of ternary function and @f@ to its
--- result. In suffix \"3l\" the number is equal to arity of the function it
--- accepts as a third argument and character \"l\" is for \"left associative\".
---
--- This function is defined as:
---
--- @
--- 'between3l' f g = ((f '~@~' g) '~@~' g) '~@~' g
--- @
---
--- Alternatively it can be defined using 'between2l':
---
--- @
--- 'between3l' f g = 'between2l' f g '~@~' g
--- @
-between3l :: (c -> d) -> (a -> b) -> (b -> b -> b -> c) -> a -> a -> a -> d
-between3l f g = ((f `between` g) `between` g) `between` g
-{-# INLINE between3l #-}
 
 -- $composability
 --
