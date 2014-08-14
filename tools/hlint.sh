@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Colorize output if it's a terminal
 if [ -t 1 ]; then
@@ -6,7 +6,7 @@ if [ -t 1 ]; then
 fi
 
 DIRS=''
-for PKG in '' not-found*; do
+for PKG in ''; do
     for D in 'src' 'test' 'tests'; do
         if [ -n "$PKG" ]; then
             D="$PKG/$D"
