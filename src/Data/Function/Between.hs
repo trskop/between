@@ -99,7 +99,7 @@ module Data.Function.Between
   where
 
 import Data.Functor (Functor(fmap))
-import Data.Function ((.), flip, id)
+import Data.Function ((.), flip)
 
 
 -- | Core combinator of this module and we build others on top of. It also has
@@ -112,12 +112,6 @@ import Data.Function ((.), flip, id)
 -- @
 between :: (c -> d) -> (a -> b) -> (b -> c) -> a -> d
 between f g = (f .) . (. g)
-{-# INLINE between #-}
-{-# RULES
-"id/between/id"             between id id = id
-"id/between"      forall f. between id f  = (. f)
-"between/id"      forall f. between f  id = (f .)
-  #-}
 
 -- | Infix variant of 'between'.
 --
@@ -126,7 +120,6 @@ between f g = (f .) . (. g)
 (~@~) :: (c -> d) -> (a -> b) -> (b -> c) -> a -> d
 (~@~) = between
 infixl 8 ~@~
-{-# INLINE (~@~) #-}
 
 -- | Flipped variant of '~@~', i.e. flipped infix variant of 'between'.
 --
@@ -135,7 +128,6 @@ infixl 8 ~@~
 (~@@~) :: (a -> b) -> (c -> d) -> (b -> c) -> a -> d
 (~@@~) = flip between
 infixr 8 ~@@~
-{-# INLINE (~@@~) #-}
 
 -- | As '~@~', but first function is also parametrized with @a@, hence the name
 -- '^@~'. Character @^@ indicates which argument is parametrized with
@@ -152,7 +144,6 @@ infixr 8 ~@@~
 (^@~) :: (a -> c -> d) -> (a -> b) -> (b -> c) -> a -> d
 (f ^@~ g) h a = (f a `between` g) h a
 infixl 8 ^@~
-{-# INLINE (^@~) #-}
 
 -- | Flipped variant of '^@~'.
 --
@@ -161,7 +152,6 @@ infixl 8 ^@~
 (~@@^) :: (a -> b) -> (a -> c -> d) -> (b -> c) -> a -> d
 (~@@^) = flip (^@~)
 infixr 8 ~@@^
-{-# INLINE (~@@^) #-}
 
 -- | Pass additional argument to first two function arguments.
 --
@@ -191,7 +181,6 @@ infixr 8 ~@@^
 (^@^) :: (a -> d -> e) -> (a -> b -> c) -> (c -> d) -> a -> b -> e
 (f ^@^ g) h a = (f a `between` g a) h
 infix 8 ^@^
-{-# INLINE (^@^) #-}
 
 -- | Flipped variant of '^@^'.
 --
@@ -200,7 +189,6 @@ infix 8 ^@^
 (^@@^) :: (a -> b -> c) -> (a -> d -> e) -> (c -> d) -> a -> b -> e
 (^@@^) = flip (^@^)
 infix 8 ^@@^
-{-# INLINE (^@@^) #-}
 
 -- | Apply function @g@ to each argument of binary function and @f@ to its
 -- result. In suffix \"2l\" the number is equal to arity of the function it
@@ -213,11 +201,10 @@ infix 8 ^@@^
 -- Interesting observation:
 --
 -- @
--- (\\f g -> 'between2l' 'id' g f) === 'Data.Function.on'
+-- (\\f g -> 'between2l' 'Data.Function.id' g f) === 'Data.Function.on'
 -- @
 between2l :: (c -> d) -> (a -> b) -> (b -> b -> c) -> a -> a -> d
 between2l f g = (f `between` g) `between` g
-{-# INLINE between2l #-}
 
 -- | Apply function @g@ to each argument of ternary function and @f@ to its
 -- result. In suffix \"3l\" the number is equal to arity of the function it
@@ -236,7 +223,6 @@ between2l f g = (f `between` g) `between` g
 -- @
 between3l :: (c -> d) -> (a -> b) -> (b -> b -> b -> c) -> a -> a -> a -> d
 between3l f g = ((f `between` g) `between` g) `between` g
-{-# INLINE between3l #-}
 
 -- | Convenience wrapper for:
 --
@@ -254,7 +240,6 @@ between3l f g = ((f `between` g) `between` g) `between` g
     => (c -> d) -> (a -> b) -> (f b -> g c) -> f a -> g d
 f <~@~> g = fmap f `between` fmap g
 infix 8 <~@~>
-{-# INLINE (<~@~>) #-}
 
 -- | Flipped variant of '<~@~>'.
 --
@@ -268,7 +253,6 @@ infix 8 <~@~>
     => (a -> b) -> (c -> d) -> (f b -> g c) -> f a -> g d
 f <~@@~> g = fmap g `between` fmap f
 infix 8 <~@@~>
-{-# INLINE (<~@@~>) #-}
 
 -- | Apply fmap to first argument of '~@~'. Dual to '~@~>' which applies
 -- 'fmap' to second argument.
@@ -290,7 +274,6 @@ infix 8 <~@@~>
 (<~@~) :: Functor f => (c -> d) -> (a -> b) -> (b -> f c) -> a -> f d
 (<~@~) = between . fmap
 infixl 8 <~@~
-{-# INLINE (<~@~) #-}
 
 -- | Flipped variant of '<~@~'.
 --
@@ -305,7 +288,6 @@ infixl 8 <~@~
 (~@@~>) :: Functor f => (a -> b) -> (c -> d) -> (b -> f c) -> a -> f d
 (~@@~>) = flip (<~@~)
 infixr 8 ~@@~>
-{-# INLINE (~@@~>) #-}
 
 -- | Apply fmap to second argument of '~@~'. Dual to '<~@~' which applies
 -- 'fmap' to first argument.
@@ -324,7 +306,6 @@ infixr 8 ~@@~>
 (~@~>) :: Functor f => (c -> d) -> (a -> b) -> (f b -> c) -> f a -> d
 (~@~>) f = between f . fmap
 infixl 8 ~@~>
-{-# INLINE (~@~>) #-}
 
 -- | Flipped variant of '~@~>'.
 --
@@ -336,7 +317,6 @@ infixl 8 ~@~>
 (<~@@~) :: Functor f => (a -> b) -> (c -> d) -> (f b -> c) -> f a -> d
 (<~@@~) = flip (~@~>)
 infixr 8 <~@@~
-{-# INLINE (<~@@~) #-}
 
 -- | Convenience wrapper for: @\\f g -> 'fmap' . f '^@~' g@.
 --
@@ -360,7 +340,6 @@ infixr 8 <~@@~
     => (a -> c -> d) -> (a -> b) -> (b -> f c) -> a -> f d
 (<^@~) f = (fmap . f ^@~)
 infixl 8 <^@~
-{-# INLINE (<^@~) #-}
 
 -- | Flipped variant of '~@^>'.
 --
@@ -383,7 +362,6 @@ infixl 8 <^@~
     => (a -> b) -> (a -> c -> d) -> (b -> f c) -> a -> f d
 (~@@^>) = flip (<^@~)
 infixl 8 ~@@^>
-{-# INLINE (~@@^>) #-}
 
 -- | Convenience wrapper for: @\\f g -> 'fmap' . f '^@^' 'fmap' . g@.
 --
@@ -397,7 +375,6 @@ infixl 8 ~@@^>
     => (a -> d -> e) -> (a -> b -> c) -> (f c -> g d) -> a -> f b -> g e
 (f <^@^> g) h a = (fmap (f a) `between` fmap (g a)) h
 infix 8 <^@^>
-{-# INLINE (<^@^>) #-}
 
 -- | Flipped variant of '<^@^>'.
 --
@@ -411,7 +388,6 @@ infix 8 <^@^>
     => (a -> b -> c) -> (a -> d -> e) -> (f c -> g d) -> a -> f b -> g e
 (<^@@^>) = flip (<^@^>)
 infix 8 <^@@^>
-{-# INLINE (<^@@^>) #-}
 
 -- | Convenience wrapper for: @\\f g -> 'fmap' . f '^@^' g@.
 --
@@ -428,7 +404,6 @@ infix 8 <^@@^>
     => (a -> d -> e) -> (a -> b -> c) -> (c -> f d) -> a -> b -> f e
 (f <^@^ g) h a = (fmap (f a) `between` g a) h
 infix 8 <^@^
-{-# INLINE (<^@^) #-}
 
 -- | Flipped variant of '<^@^'.
 --
@@ -445,7 +420,6 @@ infix 8 <^@^
     => (a -> b -> c) -> (a -> d -> e) -> (c -> f d) -> a -> b -> f e
 (^@@^>) = flip (<^@^)
 infix 8 ^@@^>
-{-# INLINE (^@@^>) #-}
 
 -- | Convenience wrapper for: @\\f g -> f '^@^' 'fmap' . g@.
 --
@@ -459,7 +433,6 @@ infix 8 ^@@^>
     => (a -> d -> e) -> (a -> b -> c) -> (f c -> d) -> a -> f b -> e
 (f ^@^> g) h a = (f a `between` fmap (g a)) h
 infix 8 ^@^>
-{-# INLINE (^@^>) #-}
 
 -- | Flipped variant of '<^@^>'.
 --
@@ -473,7 +446,6 @@ infix 8 ^@^>
     => (a -> b -> c) -> (a -> d -> e) -> (f c -> d) -> a -> f b -> e
 (<^@@^) = flip (^@^>)
 infix 8 <^@@^
-{-# INLINE (<^@@^) #-}
 
 -- $composability
 --
