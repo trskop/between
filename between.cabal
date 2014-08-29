@@ -1,5 +1,5 @@
 name:                   between
-version:                0.9.0.1
+version:                0.9.0.2
 synopsis:               Function combinator "between" and derived combinators
 description:
   It turns out that this combinator
@@ -54,4 +54,4 @@ source-repository head
 source-repository this
   type:                 git
   location:             git://github.com/trskop/between.git
-  tag:                  v0.9.0.1
+  tag:                  v0.9.0.2
