@@ -14,11 +14,7 @@ description:
   lenses. See <http://hackage.haskell.org/package/lens lens package> for
   detais on what lenses are.
   .
-  README and ChangeLog can be found in source code package and on GitHub:
-  .
-  * <https://github.com/trskop/between/blob/master/README.md>
-  .
-  * <https://github.com/trskop/between/blob/master/ChangeLog.md>
+  Usage examples and documentation can be found in "Data.Function.Between".
 
 homepage:               https://github.com/trskop/between
 bug-reports:            https://github.com/trskop/between/issues
