@@ -25,7 +25,7 @@
 --
 -- Which is the core pattern used by all functions defined in this module.
 --
--- Trying to generalize this pattern furhter ends as:
+-- Trying to generalize this pattern further ends as:
 -- @(f 'Data.Functor.<$>') '.' ('Data.Functor.<$>' g)@, where
 -- @'Data.Functor.<$>' = 'fmap'@. Other combinations of substituting '.' for
 -- 'fmap' will end up less or equally generic. Type of such expression is:
@@ -60,7 +60,8 @@ module Data.Function.Between
 
     -- * Derived Combinators
     --
-    -- Combinators that further paramterize @f@ and @g@ in @f '.' g '.' h@.
+    -- | Combinators that either further parametrise @f@ or @g@ in
+    -- @f '.' g '.' h@, or apply '~@~' more then once.
     , (^@~)
     , (~@@^)
 
@@ -72,8 +73,8 @@ module Data.Function.Between
 
     -- ** Lifted Combinators
     --
-    -- Combinators based on '~@~', '^@~', '^@^', and their flipped variants,
-    -- that use 'fmap' to lift one or more of its arguments in to operate in
+    -- | Combinators based on '~@~', '^@~', '^@^', and their flipped variants,
+    -- that use 'fmap' to lift one or more of its arguments to operate in
     -- 'Functor' context.
     , (<~@~>)
     , (<~@@~>)
@@ -129,8 +130,8 @@ infixl 8 ~@~
 (~@@~) = flip between
 infixr 8 ~@@~
 
--- | As '~@~', but first function is also parametrized with @a@, hence the name
--- '^@~'. Character @^@ indicates which argument is parametrized with
+-- | As '~@~', but first function is also parametrised with @a@, hence the name
+-- '^@~'. Character @^@ indicates which argument is parametrised with
 -- additional argument.
 --
 -- This function is defined as:
@@ -228,7 +229,7 @@ between3l f g = ((f `between` g) `between` g) `between` g
 --
 -- @
 -- \\f g -> 'fmap' f '~@~' 'fmap' g
--- @.
+-- @
 --
 -- Name of '<~@~>' simply says that we apply 'Data.Functor.<$>' ('fmap') to
 -- both its arguments and then we apply '~@~'.
@@ -295,7 +296,7 @@ infixr 8 ~@@~>
 -- Defined as:
 --
 -- @
--- f ~@~> g -> f '~@~' 'fmap' g@.
+-- f '~@~>' g -> f '~@~' 'fmap' g
 -- @
 --
 -- Name of '~@~>' simply says that we apply 'Data.Functor.<$>' ('fmap') to
