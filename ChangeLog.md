@@ -1,5 +1,12 @@
 # ChangeLog / ReleaseNotes
 
+## Version 0.9.0.2
+
+* Minor documentation changes.
+* Resolving some Haddock issues in documentation.
+* Uploaded to [Hackage][]:
+  <http://hackage.haskell.org/package/between-0.9.0.2>
+
 
 ## Version 0.9.0.1
 
