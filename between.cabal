@@ -1,5 +1,5 @@
 name:                   between
-version:                0.9.0.2
+version:                0.10.0.0
 synopsis:               Function combinator "between" and derived combinators
 description:
   It turns out that this combinator
@@ -25,7 +25,7 @@ description:
   > on3 f g = (id ~@~ g ~@~ g ~@~ g) f
   .
   Other usage examples and documentation can be found in
-  "Data.Function.Between".
+  "Data.Function.Between" module.
 
 homepage:               https://github.com/trskop/between
 bug-reports:            https://github.com/trskop/between/issues
@@ -65,4 +65,4 @@ source-repository head
 source-repository this
   type:                 git
   location:             git://github.com/trskop/between.git
-  tag:                  v0.9.0.2
+  tag:                  v0.10.0.0
