@@ -49,7 +49,10 @@ flag pedantic
 
 library
   hs-source-dirs:       src
-  exposed-modules:      Data.Function.Between
+  exposed-modules:
+      Data.Function.Between
+    , Data.Function.Between.Lazy
+    , Data.Function.Between.Strict
   build-depends:        base > 3 && < 5
 
   ghc-options:          -Wall
