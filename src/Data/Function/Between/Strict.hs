@@ -7,7 +7,7 @@
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  non-portable (NoImplicitPrelude)
+-- Portability:  NoImplicitPrelude
 --
 -- Implementation of strict 'between' combinator and its variations. For
 -- introductory documentation see module "Data.Function.Between" and
