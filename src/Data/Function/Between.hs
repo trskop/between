@@ -7,7 +7,7 @@
 --
 -- Maintainer:   peter.trsko@gmail.com
 -- Stability:    experimental
--- Portability:  portable
+-- Portability:  NoImplicitPrelude
 --
 -- During development it is common occurrence to modify deeply nested
 -- structures. One of the best known libraries for this purpose is
