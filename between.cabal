@@ -60,6 +60,7 @@ library
     ghc-options:
       -fwarn-tabs
       -fwarn-implicit-prelude
+      -fwarn-missing-import-lists
 --    -Werror
 
 source-repository head
