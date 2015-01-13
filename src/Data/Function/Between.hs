@@ -3,7 +3,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Function combinator "between" and its variations.
--- Copyright:    (c) 2013, 2014 Peter Trsko
+-- Copyright:    (c) 2013-2015 Peter Trsko
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -15,14 +15,14 @@
 -- <http://hackage.haskell.org/package/lens lens>, but it's quite
 -- overkill for some purposes.
 --
--- This module describes simple and composable combinators that are built on
+-- This library describes simple and composable combinators that are built on
 -- top of very basic concept:
 --
--- @f '.' h '.' g@
+-- @f . h . g@
 --
 -- Where @f@ and @g@ are fixed. It is possible to reduce it to just:
 --
--- @(f '.') '.' ('.' g)@
+-- @(f .) . (. g)@
 --
 -- Which is the core pattern used by all functions defined in this module.
 --
@@ -35,10 +35,14 @@
 -- >     :: Functor f => (b -> c) -> f a -> (a -> b) -> f c
 --
 -- Which doesn't give us much more power. Instead of going for such
--- generalization we kept the original @((f '.') '.' ('.' g))@ which we named
+-- generalization we kept the original @((f .) . (. g))@ which we named
 -- 'between' or '~@~' in its infix form.
 module Data.Function.Between
     (
+    -- | This module reexports "Data.Function.Between.Lazy" that uses standard
+    -- definition of ('Data.Function..') function as a basis of all
+    -- combinators. There is also module "Data.Function.Between.Strict", that
+    -- uses strict definition of function composition.
       module Data.Function.Between.Lazy
 
     -- * Composability
@@ -309,4 +313,5 @@ import Data.Function.Between.Lazy
 -- @
 --
 -- Data type @Identity@ is defined in
--- <http://hackage.haskell.org/package/transformers transformers package>.
+-- <http://hackage.haskell.org/package/transformers transformers package> for
+-- base < 4.8.
