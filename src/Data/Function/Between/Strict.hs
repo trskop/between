@@ -2,7 +2,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Strict function combinator "between" and its variations.
--- Copyright:    (c) 2013, 2014 Peter Trsko
+-- Copyright:    (c) 2013-2015 Peter Trsko
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -17,7 +17,7 @@
 -- definition of function composition:
 --
 -- @
--- (f . g) x = f (g '$!' x)
+-- (f . g) x = f '$!' g '$!' x
 -- @
 --
 -- /Since version 0.10.0.0./
@@ -80,7 +80,7 @@ import Data.Functor (Functor(fmap))
 -- | Strict variant of function composition. Defined as:
 --
 -- @
--- (f . g) x = f (g '$!' x)
+-- (f . g) x = f '$!' g '$!' x
 -- @
 --
 -- Note: this function should not be exported. There are packages out there
@@ -88,7 +88,7 @@ import Data.Functor (Functor(fmap))
 --
 -- /Since version 0.10.0.0./
 (.) :: (b -> c) -> (a -> b) -> a -> c
-(f . g) x = f (g $! x)
+(f . g) x = f $! g $! x
 infixr 9 .
 {-# INLINE (.) #-}
 
