@@ -459,9 +459,9 @@ infix 8 ^@@^>
 (f ^@^> g) h a = ((f $! a) `between` fmap (g $! a)) h
 infix 8 ^@^>
 
--- | Flipped variant of '<^@^>'.
+-- | Flipped variant of '^@^>'.
 --
--- Name of '<^@@^>' simply says that we apply 'Data.Functor.<$>' ('fmap') to
+-- Name of '<^@@^' simply says that we apply 'Data.Functor.<$>' ('fmap') to
 -- first (left) arguments and then we apply '^@@^'.
 --
 -- Fixity is set to value 8, which is one less then of function composition
