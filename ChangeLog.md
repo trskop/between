@@ -7,8 +7,8 @@
   now reexported by `Data.Function.Between`. (new)
 * Implementation of strict variants of all functions defined in
   `Data.Function.Between.Lazy` module. These new functions use
-  `(f . g) x = f (g $! x)` as definition for function composition where `$!` is
-  strict application. (new)
+  `(f . g) x = f '$!' g '$!' x` as definition for function composition where
+  `$!` is strict application. (new)
 
 
 ## Version 0.9.0.2
