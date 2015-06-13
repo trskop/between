@@ -9,6 +9,7 @@
   `Data.Function.Between.Lazy` module. These new functions use
   `(f . g) x = f '$!' g '$!' x` as definition for function composition where
   `$!` is strict application. (new)
+* Uploaded to Hackage: http://hackage.haskell.org/package/between-0.10.0.0
 
 
 ## Version 0.9.0.2
