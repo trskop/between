@@ -59,6 +59,18 @@ module Data.Function.Between
     -- * Constructing Lenses
     --
     -- $lenses
+
+    -- * Related Work
+    --
+    -- | There are other packages out there that provide similar combinators.
+
+    -- ** Package profunctors
+    --
+    -- $profunctors
+
+    -- ** Package pointless-fun
+    --
+    -- $pointless-fun
     )
   where
 
@@ -360,3 +372,47 @@ import Data.Function.Between.Lazy
 -- Data type @Identity@ is defined in
 -- <http://hackage.haskell.org/package/transformers transformers package> or
 -- in base >= 4.8.
+
+-- $profunctors
+--
+-- You may have noticed similarity between:
+--
+-- @
+-- dimap :: Profunctor p => (a -> b) -> (c -> d) -> p b c -> p a d
+-- @
+--
+-- and
+--
+-- @
+-- between :: (c -> d) -> (a -> b) -> (b -> c) -> a -> d
+-- @
+--
+-- If you also consider that there is also @instance Profunctor (->)@, then
+-- 'between' becomes specialized @dimap@ for @Profunctor (->)@.
+--
+-- Profunctors are a powerful abstraction and Edward Kmett's implementation
+-- also includes low level optimizations that use the coercible feature of GHC.
+-- For more details see its
+-- <https://hackage.haskell.org/package/profunctors package documentation>.
+
+-- $pointless-fun
+--
+-- Package <https://hackage.haskell.org/package/pointless-fun pointless-fun>
+-- provides few similar combinators then 'between' in both strict and lazy
+-- variants:
+--
+-- @
+-- (~>) :: (a -> b) -> (c -> d) -> (b -> c) -> a -> d
+-- (!~>) :: (a -> b) -> (c -> d) -> (b -> c) -> a -> d
+-- @
+--
+-- Comare it with:
+--
+-- @
+-- 'between' :: (c -> d) -> (a -> b) -> (b -> c) -> a -> d
+-- @
+--
+-- And you see that @(~>)@ is flipped 'Data.Function.Between.Lazy.between' and
+-- @(!~>)@ is similar to (strict) 'Data.Function.Between.Strict.between', but
+-- our (strict) 'Data.Function.Between.Strict.between' is even less lazy in its
+-- implementation then @(!~>)@.
