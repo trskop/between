@@ -3,7 +3,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Function combinator "between" and its variations.
--- Copyright:    (c) 2013-2015 Peter Trsko
+-- Copyright:    (c) 2013-2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -138,7 +138,7 @@ import Data.Function.Between.Lazy
 -- Which allows us to interpret '~@~' in terms like \"apply this function to
 -- the n-th argument before passing it to the function @f@\". We just have to
 -- count the arguments backwards. In example if want to apply function @g@ to
--- third argument, but no other then we can use:
+-- third argument, but no other, then we can use:
 --
 -- @
 -- \\g f -> ('Data.Function.id' '~@~' g '~@~' 'Data.Function.id' '~@~' 'Data.Function.id') f
@@ -295,7 +295,7 @@ import Data.Function.Between.Lazy
 -- t = T '<~@~' fromT
 -- @
 --
--- Lets define lenses for generic data type, e.g. something like:
+-- Now, lets define lenses for generic data type, e.g. something like:
 --
 -- @
 -- data D a b = D {_x :: a, _y :: b}
@@ -398,7 +398,7 @@ import Data.Function.Between.Lazy
 -- $pointless-fun
 --
 -- Package <https://hackage.haskell.org/package/pointless-fun pointless-fun>
--- provides few similar combinators then 'between' in both strict and lazy
+-- provides few similar combinators, to 'between', in both strict and lazy
 -- variants:
 --
 -- @

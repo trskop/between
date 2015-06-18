@@ -2,7 +2,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Strict function combinator "between" and its variations.
--- Copyright:    (c) 2013-2015 Peter Trsko
+-- Copyright:    (c) 2013-2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com

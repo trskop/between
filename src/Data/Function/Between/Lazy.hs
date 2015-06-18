@@ -2,7 +2,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Lazy function combinator "between" and its variations.
--- Copyright:    (c) 2013-2015 Peter Trško
+-- Copyright:    (c) 2013-2015, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
