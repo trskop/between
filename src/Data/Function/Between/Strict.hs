@@ -26,12 +26,12 @@ module Data.Function.Between.Strict
     -- * Between Function Combinator
     --
     -- | Captures common pattern of @\\g -> (f . g . h)@ where @f@ and @h@
-    -- are fixed parameters.
+    -- are fixed parameters and @(.)@ is strict function composition.
       between
     , (~@~)
     , (~@@~)
 
-    -- * Derived Combinators
+    -- ** Derived Combinators
     --
     -- | Combinators that either further parametrise @f@ or @g@ in
     -- @f . g . h@, or apply '~@~' more then once.
@@ -69,6 +69,20 @@ module Data.Function.Between.Strict
 
     , (^@^>)
     , (<^@@^)
+
+    -- * In-Between Function Application Combinator
+    --
+    -- | Captures common pattern of @\\f -> (a \`f\` b)@ where @a@ and @b@ are
+    -- fixed parameters. It doesn't look impressive untill one thinks about @a@
+    -- and @b@ as functions.
+    --
+    -- /Since version 0.11.0.0./
+    , inbetween
+    , (~$~)
+    , (~$$~)
+
+    , withIn
+    , withReIn
     )
   where
 
@@ -473,3 +487,156 @@ infix 8 ^@^>
     => (a -> b -> c) -> (a -> d -> e) -> (f c -> d) -> a -> f b -> e
 g <^@@^ f = f ^@^> g
 infix 8 <^@@^
+
+-- {{{ In-Between Function Application Combinator -----------------------------
+
+-- | Prefix version of common pattern:
+--
+-- @
+-- \\f -> a \`f\` b
+-- @
+--
+-- Where @a@ and @b@ are fixed parameters. There is also infix version named
+-- '~$~'. This function is defined as:
+--
+-- @
+-- 'inbetween' a b f = (f $! a) $! b
+-- @
+--
+-- Based on the above definition one can think of it as a variant function
+-- application that deals with two arguments, where in example
+-- 'Data.Function.$' only deals with one.
+--
+-- /Since version 0.11.0.0./
+inbetween :: a -> b -> (a -> b -> r) -> r
+inbetween a b f = (f $! a) $! b
+infix 8 `inbetween`
+
+-- | Infix version of common pattern:
+--
+-- @
+-- \\f -> (f '$!' a) '$!' b
+-- @
+--
+-- Where @a@ and @b@ are fixed parameters. There is also prefix version named
+-- 'inbetween'.
+--
+-- /Since version 0.11.0.0./
+(~$~) :: a -> b -> (a -> b -> r) -> r
+(~$~) = inbetween
+infix 8 ~$~
+
+-- | Infix version of common pattern:
+--
+-- @
+-- \\f -> (f '$!' a) '$!' b   -- Notice the order of \'a\' and \'b\'.
+-- @
+--
+-- /Since version 0.11.0.0./
+(~$$~) :: b -> a -> (a -> b -> r) -> r
+(b ~$$~ a) f = (f $! a) $! b
+infix 8 ~$$~
+
+-- | Construct a function that encodes idiom:
+--
+-- @
+-- \\f -> f '$!' a '$!' b   -- Notice the order of \'b\' and \'a\'.
+-- @
+--
+-- Function 'inbetween' can be redefined in terms of 'withIn' as:
+--
+-- @
+-- a ``inbetween`` b = 'withIn' 'Data.Function.$' \\f -> a \`f\` b
+-- @
+--
+-- On one hand you can think of this function as a specialized 'id' function
+-- and on the other as a function application 'Data.Function.$'. All the
+-- following definitions work for lazy variant:
+--
+-- @
+-- 'withIn' f g = f g
+-- 'withIn' = 'id'
+-- 'withIn' = ('Data.Function.$')
+-- @
+--
+-- For strict variant we use:
+--
+-- @
+-- 'withIn' f g = f '$!' g
+-- @
+--
+-- Usage examples:
+--
+-- @
+-- newtype Foo a = Foo a
+--
+-- inFoo :: ((a -> Foo a) -> (Foo t -> t) -> r) -> r
+-- inFoo = 'withIn' '$' \\f ->
+--     Foo \`f\` \\(Foo a) -> Foo
+-- @
+--
+-- @
+-- data Coords2D = Coords2D {_x :: Int, _y :: Int}
+--
+-- inX :: ((Int -> Coords2D -> Coords2D) -> (Coords2D -> Int) -> r) -> r
+-- inX = 'withIn' '$' \\f ->
+--     (\\b s -> s{_x = b}) \`f\` _x
+-- @
+--
+-- /Since version 0.11.0.0./
+withIn :: ((a -> b -> r) -> r) -> (a -> b -> r) -> r
+withIn f g = f $! g
+
+-- | Construct a function that encodes idiom:
+--
+-- @
+-- \\f -> b \`f\` a     -- Notice the order of \'b\' and \'a\'.
+-- @
+--
+-- Function '~$$~' can be redefined in terms of 'withReIn' as:
+--
+-- @
+-- b '~$$~' a = 'withReIn' '$' \\f -> b \`f\` a
+-- @
+--
+-- As 'withIn', but the function is flipped before applied. All of the
+-- following definitions work for lazy variant:
+--
+-- @
+-- 'withReIn' f g = f ('Data.Function.flip' g)
+-- 'withReIn' = ('Data.Function..' 'Data.Function.flip')
+-- @
+--
+-- For strict variant we can use:
+--
+-- @
+-- 'withReIn' f g = f '$!' \\b a -> 'inbetween' a b g
+-- 'withReIn' f g = f '$!' \\b a -> (a '~$~' b) g
+-- 'withReIn' f g = f '$!' \\b a -> (b '~$$~' a) g
+-- 'withReIn' f g = f '$!' \\b a -> g '$!' a '$!' b
+-- 'withReIn' f g = withIn f (\\b a -> g '$!' a '$!' b)
+-- @
+--
+-- Usage examples:
+--
+-- @
+-- newtype Foo a = Foo a
+--
+-- inFoo :: ((a -> Foo a) -> (Foo t -> t) -> r) -> r
+-- inFoo = 'withReIn' '$' \\f ->
+--     (\\(Foo a) -> Foo) \`f\` Foo
+-- @
+--
+-- @
+-- data Coords2D = Coords2D {_x :: Int, _y :: Int}
+--
+-- inX :: ((Int -> Coords2D -> Coords2D) -> (Coords2D -> Int) -> r) -> r
+-- inX = 'withReIn' '$' \\f ->
+--     _x \`f\` \\b s -> s{_x = b}
+-- @
+--
+-- /Since version 0.11.0.0./
+withReIn :: ((b -> a -> r) -> r) -> (a -> b -> r) -> r
+withReIn f g = withIn f (\b a -> (g $! a) $! b)
+
+-- }}} In-Between Function Application Combinator -----------------------------
