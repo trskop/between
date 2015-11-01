@@ -60,6 +60,10 @@ module Data.Function.Between
     --
     -- $lenses
 
+    -- * Using With Lenses
+    --
+    -- $withLenses
+
     -- * Related Work
     --
     -- | There are other packages out there that provide similar combinators.
@@ -373,6 +377,125 @@ import Data.Function.Between.Lazy
 -- <http://hackage.haskell.org/package/transformers transformers package> or
 -- in base >= 4.8.
 
+-- $withLenses
+--
+-- Leses are basically just functions with a nice trick to them. If you look
+-- at the core pattern used in <https://hackage.haskell.org/package/lens lens>
+-- library is:
+--
+-- @
+-- type Optical p q f s t a b = p a (f b) -> q s (f t)
+-- @
+--
+-- Which is just a function @c -> d@ where @c = p a (f b)@ and @d = q s (f t)@.
+-- In most common situations @p@ and @q@ are instantiated to be @->@ making
+-- the @Optical@ type colapse in to something more specific:
+--
+-- @
+-- type LensLike f s t a b = (a -> f b) -> s -> f t
+-- @
+--
+-- Where @f@ is some instance of 'Functor' and that is how we get @Lens@, which
+-- is just:
+--
+-- @
+-- type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t
+-- @
+--
+-- These lenses are called /Laarhoven Lenses/, after /Twan van Laarhoven/ who
+-- introduced them in
+-- <http://www.twanvl.nl/blog/haskell/cps-functional-references CPS based functional references>
+-- article.
+--
+-- We can choose even stronger constraints then 'Functor', in example
+-- 'Control.Applicative.Applicative', then we get a @Traversal@, and, of
+-- course, it doesn't end with it, there is a lot more to choose from.
+--
+-- What is important, in the above /lens/ pattern, is that it's a function that
+-- can be composed using function composition ('.') operator (remember that
+-- it's just a function @c -> d@). As a consequence 'between' can be used as
+-- well. Small example:
+--
+-- >>> (1, ((2, 3), (4, 5))) ^. (_2 ~@~ _2) _1
+-- 3
+-- >>> (1, ((2, 3), (4, 5))) ^. (_2 ~@~ _2) _2
+-- 5
+--
+-- This shows us that '~@~' can be used to compose two lenses, or other
+-- abstractions from that library, but with a hole in between, where another
+-- one can be injected.
+--
+-- Lets imagine following example:
+--
+-- @
+-- data MyData f a b = MyData
+--     { _foo :: f a
+--     , _bar :: f b
+--     }
+-- @
+--
+-- Lets have lenses for @MyData@:
+--
+-- @
+-- foo :: Lens (MyData h a b) (MyData h a' b) (h a) (h a')
+-- bar :: Lens (MyData h a b) (MyData h a b') (h b) (h b')
+-- @
+--
+-- Following instance of data type @MyData@ is what our example will be based
+-- upon:
+--
+-- @
+-- -- We use type proxy to instantiate \'h\' in to concrete functor.
+-- myData
+--     :: 'Control.Applicative.Applicative' h
+--     => proxy h
+--     -> MyData h (Int, Int) (String, String)
+-- myData _ = MyData
+--     { _foo = pure (1, 2)
+--     , _bar = pure ("hello", "world")
+--     }
+-- @
+--
+-- We don't know exactly what @h@ will be instantiated to, but we can already
+-- provide following lenses:
+--
+-- @
+-- foo1in
+--     :: (Field1 s t a1 b1, 'Functor' f)
+--     => LensLike f (h a) (h a') s t
+--     -> LensLike f (MyData h a b) (MyData h a' b) a1 b1
+-- foo1in = foo '~@~' _1
+--
+-- foo2in
+--     :: (Field2 s t a1 b1, 'Functor' f)
+--     => LensLike f (h a) (h a') s t
+--     -> LensLike f (MyData h a b) (MyData h a' b) a1 b1
+-- foo2in = foo '~@~' _2
+--
+-- bar1in
+--     :: (Field1 s t a1 b1, 'Functor' f)
+--     => LensLike f (h b) (h b') s t
+--     -> LensLike f (MyData h a b) (MyData h a b') a1 b1
+-- bar1in = bar '~@~' _1
+--
+-- bar2in
+--     :: (Field2 s t a1 b1, 'Functor' f)
+--     => LensLike f (h b) (h b') s t
+--     -> LensLike f (MyData h a b) (MyData h a b') a1 b1
+-- bar2in = bar '~@~' _2
+-- @
+--
+-- Don't get scared by the type signatures, just focus on the pattern here.
+--
+-- >>> myData (Proxy :: Proxy ((,) ())) ^. foo1in _2
+-- 1
+-- >>> myData (Proxy :: Proxy ((,) ())) ^. foo2in _2
+-- 2
+-- >>> myData (Proxy :: Proxy Maybe) ^. bar1in _Just
+-- "hello"
+-- >>> myData (Proxy :: Proxy Maybe) ^. bar2in _Just
+-- "world"
+
 -- $profunctors
 --
 -- You may have noticed similarity between:
@@ -388,7 +511,7 @@ import Data.Function.Between.Lazy
 -- @
 --
 -- If you also consider that there is also @instance Profunctor (->)@, then
--- 'between' becomes specialized @dimap@ for @Profunctor (->)@.
+-- 'between' becomes specialized flipped @dimap@ for @Profunctor (->)@.
 --
 -- Profunctors are a powerful abstraction and Edward Kmett's implementation
 -- also includes low level optimizations that use the coercible feature of GHC.
