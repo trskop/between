@@ -83,12 +83,26 @@ module Data.Function.Between.Strict
 
     , withIn
     , withReIn
+
+    -- ** Precursors to Iso, Lens and Prism
+    --
+    -- | /Since version 0.11.0.0./
+    , module Data.Function.Between.Types
     )
   where
 
 import Prelude (($!))
 
 import Data.Functor (Functor(fmap))
+
+import Data.Function.Between.Types
+    ( PreIso
+    , PreIso'
+    , PreLens
+    , PreLens'
+    , PrePrism
+    , PrePrism'
+    )
 
 
 -- | Strict variant of function composition. Defined as:

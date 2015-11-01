@@ -64,6 +64,10 @@ module Data.Function.Between
     --
     -- $withLenses
 
+    -- * Precursors to Iso, Lens and Prism
+    --
+    -- $precursorsToIsoLensAndPrism
+
     -- * Related Work
     --
     -- | There are other packages out there that provide similar combinators.
@@ -495,6 +499,114 @@ import Data.Function.Between.Lazy
 -- "hello"
 -- >>> myData (Proxy :: Proxy Maybe) ^. bar2in _Just
 -- "world"
+
+-- $precursorsToIsoLensAndPrism
+--
+-- When it comes to standard data types, then, at the hart of every @Iso@,
+-- @Lens@ and @Prism@, lies a simple trick. A hole is inserted between getter
+-- (i.e. destructor) function and setter (i.e. constructor) function.
+-- Difference between various constructs in e.g.
+-- <https://hackage.haskell.org/package/lens lens> library is the
+-- specialization of that hole, which in turn constraints type signature a
+-- little bit.
+--
+-- Example:
+--
+-- @
+-- data Coords2D = Coords2D {_x :: Int, _y :: Int}
+--
+-- x :: Lens' Coords2D Int
+-- x f s = setter s 'Data.Functor.<$>' f (getter s)
+--   where
+--     getter = _x
+--     setter s b = s{_x = b}
+-- @
+--
+-- As we can see, in the above example, there is a function function inserted
+-- in between @getter@ and @setter@ functions. That function contains an
+-- unknown function @f@.
+--
+-- If we gather all the code in between @getter@ and @setter@ functions and put
+-- in to one place, then we would get:
+--
+-- @
+-- x :: Lens' Coords2D Int
+-- x = setter \`f\` getter
+--   where
+--     getter = _x
+--     setter s b = s{_x = b}
+--     f set get h s = set s 'Data.Functor.<$>' h (get h)
+-- @
+--
+-- Now we can see that the original hole (function @f@) has moved little bit
+-- further down and is now called @h@. Function @f@ now is a /Lens/ smart
+-- constructor that takes getter and setter and creates a /Lens/. This leads us
+-- to a question. What would happen if we won't specialize @f@, at all, and
+-- leave it to a user to decide what it should be? This is what we would get:
+--
+-- @
+-- preX :: ((Coords2D -> Int) -> (Coords2D -> Int -> Coords2D) -> r) -> r
+-- preX f = _x \`f\` \\s b -> s{_x = b}
+-- @
+--
+-- Now we can move things arount a bit:
+--
+-- @
+-- preX :: ((Int -> Coords2D -> Coords2D) -> (Coords2D -> Int) -> r) -> r
+-- preX f = (\\b s -> s{_x = b}) \`f\` _x
+-- @
+--
+-- This can also be rewritten to use '~$~' combinator:
+--
+-- @
+-- preX :: ((Int -> Coords2D -> Coords2D) -> (Coords2D -> Int) -> r) -> r
+-- preX = (\\b s -> s{_x = b}) '~$~' _x
+-- @
+--
+-- Or even using its flipped variant '~$$~':
+--
+-- @
+-- preX :: ((Int -> Coords2D -> Coords2D) -> (Coords2D -> Int) -> r) -> r
+-- preX = _x '~$$~' \\b s -> s{_x = b}
+-- @
+--
+-- We call such function a 'PreLens', since it is actually a precursors to a
+-- 'Lens'.
+--
+-- @
+-- preX :: 'PreLens'' r Coords2D Int
+-- preX = _x '~$$~' \\b s -> s{_x = b}
+-- @
+--
+-- It is also function with the most generic type signature of a function that
+-- is capable of creating a lens from getter and setter, if @f@ is specialized
+-- appropriately:
+--
+-- @
+-- x :: Lens' Coords2D Int
+-- x = preX (('<^@~') . 'flip')
+-- @
+--
+-- Notice that @preX@, in the above code snipped, got specialized in to:
+--
+-- @
+-- preX :: 'PreLens'' (Lens' Coords2D Int) Coords2D Int
+-- @
+--
+-- Function @preX@ is takes a /lens/ smart constructor regardles of what /lens/
+-- kind. It can be /Laarhoven Lens/, /Store Comonad-coalgebra/ or any other
+-- representation. It can also take a function that gets either getter or
+-- setter, or even a function that combines those functions with others.
+--
+-- This trick of putting a hole between constructor (anamorphism) and
+-- destructor (catamorphism) is also the reason why Laarhoven's Lenses can be
+-- introduced as a generalization of <https://wiki.haskell.org/Zipper zipper>
+-- idiom. For more information see also:
+--
+-- * <https://www.fpcomplete.com/user/psygnisfive/from-zipper-to-lens From Zipper To Lens>
+--
+-- * <http://www.twanvl.nl/blog/haskell/cps-functional-references CPS based functional references>,
+--   introduction of Laarhoven's Lenses.
 
 -- $profunctors
 --

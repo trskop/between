@@ -79,11 +79,25 @@ module Data.Function.Between.Lazy
 
     , withIn
     , withReIn
+
+    -- ** Precursors to Iso, Lens and Prism
+    --
+    -- | /Since version 0.11.0.0./
+    , module Data.Function.Between.Types
     )
   where
 
 import Data.Functor (Functor(fmap))
 import Data.Function ((.), flip, id)
+
+import Data.Function.Between.Types
+    ( PreIso
+    , PreIso'
+    , PreLens
+    , PreLens'
+    , PrePrism
+    , PrePrism'
+    )
 
 
 -- | Core combinator of this module and we build others on top of. It also has
