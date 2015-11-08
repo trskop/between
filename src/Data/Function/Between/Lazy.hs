@@ -16,7 +16,7 @@
 -- Prior to version 0.10.0.0 functions defined in this module were directly
 -- in "Data.Function.Between".
 --
--- /Since version 0.10.0.0./
+-- /Module available since version 0.10.0.0./
 module Data.Function.Between.Lazy
     (
     -- * Between Function Combinator
@@ -80,22 +80,24 @@ module Data.Function.Between.Lazy
     , withIn
     , withReIn
 
-    -- ** Precursors to Iso, Lens and Prism
+    -- * Precursors to Iso, Lens and Prism
     --
     -- | /Since version 0.11.0.0./
+
+    -- ** PreIso
     , PreIso
     , PreIso'
     , preIso
     , preIso'
 
-    -- * PreLens
+    -- ** PreLens
     , PreLens
     , PreLens'
     , preLens
     , preLens'
     , preIsoToPreLens
 
-    -- * PrePrism
+    -- ** PrePrism
     , PrePrism
     , PrePrism'
     , prePrism
