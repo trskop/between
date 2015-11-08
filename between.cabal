@@ -53,6 +53,7 @@ library
       Data.Function.Between
     , Data.Function.Between.Lazy
     , Data.Function.Between.Strict
+    , Data.Function.Between.Strict.Internal
     , Data.Function.Between.Types
   build-depends:        base > 3 && < 5
 

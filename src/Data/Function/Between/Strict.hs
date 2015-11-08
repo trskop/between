@@ -116,6 +116,7 @@ import Data.Function (const)
 import Data.Functor (Functor(fmap))
 import Data.Maybe (Maybe, maybe)
 
+import Data.Function.Between.Strict.Internal ((.), flip)
 import Data.Function.Between.Types
     ( PreIso
     , PreIso'
@@ -125,33 +126,6 @@ import Data.Function.Between.Types
     , PrePrism'
     )
 
-
--- | Strict variant of function composition. Defined as:
---
--- @
--- (f . g) x = f '$!' g '$!' x
--- @
---
--- Note: this function should not be exported. There are packages out there
--- that provide it and without name clashes.
---
--- /Since version 0.10.0.0./
-(.) :: (b -> c) -> (a -> b) -> a -> c
-(f . g) x = f $! g $! x
-infixr 9 .
-{-# INLINE (.) #-}
-
--- | Strict variant of 'Data.Function.flip'. Defined as:
---
--- @
--- 'flip' f b a = f '$!' a '$!' b
--- @
---
--- Note: this function should not be exported.
---
--- /Since version 0.11.0.0./
-flip :: (a -> b -> c) -> b -> a -> c
-flip f b a = (f $! a) $! b
 
 -- | Core combinator of this module and we build others on top of. It also has
 -- an infix form '~@~' and flipped infix form '~@@~'.
