@@ -83,12 +83,30 @@ module Data.Function.Between.Lazy
     -- ** Precursors to Iso, Lens and Prism
     --
     -- | /Since version 0.11.0.0./
-    , module Data.Function.Between.Types
+    , PreIso
+    , PreIso'
+    , preIso
+    , preIso'
+
+    -- * PreLens
+    , PreLens
+    , PreLens'
+    , preLens
+    , preLens'
+    , preIsoToPreLens
+
+    -- * PrePrism
+    , PrePrism
+    , PrePrism'
+    , prePrism
+    , prePrism'
     )
   where
 
+import Data.Either (Either(Left, Right))
 import Data.Functor (Functor(fmap))
-import Data.Function ((.), flip, id)
+import Data.Function ((.), ($), const, flip, id)
+import Data.Maybe (Maybe, maybe)
 
 import Data.Function.Between.Types
     ( PreIso
@@ -580,4 +598,125 @@ withIn = id
 withReIn :: ((b -> a -> r) -> r) -> (a -> b -> r) -> r
 withReIn = (. flip)
 
+-- {{{ PreIso -----------------------------------------------------------------
+
+-- | Construct a 'PreIso'; this function similar to /Iso/ constructor function
+-- from /lens/ package:
+--
+-- @
+-- iso :: (s -> a) -> (b -> t) -> Iso s t a b
+-- @
+--
+-- Usage example:
+--
+-- @
+-- data Foo a = Foo a
+--
+-- preFoo :: 'PreIso' r (Foo a) (Foo b) a b
+-- preFoo = Foo ``preIso`` \\(Foo a) -> a
+-- @
+preIso :: (s -> a) -> (b -> t) -> PreIso r s t a b
+preIso = (~$$~)
+{-# INLINE preIso #-}
+
+-- | Flipped variant of 'preIso'.
+--
+-- Usage example:
+--
+-- @
+-- data Foo a = Foo {_getFoo :: a}
+--
+-- preFoo :: 'PreIso' r (Foo a) (Foo b) a b
+-- preFoo = _getFoo ``preIso'`` Foo
+-- @
+preIso' :: (b -> t) -> (s -> a) -> PreIso r s t a b
+preIso' = inbetween
+{-# INLINE preIso' #-}
+
+-- }}} PreIso -----------------------------------------------------------------
+-- {{{ PreLens ----------------------------------------------------------------
+
+-- | Construct a 'PreLens'; this function is similar to /Lens/ constructor
+-- function from /lens/ package:
+--
+-- @
+-- lens :: (s -> b -> t) -> (s -> a) -> Lens' s t a b
+-- @
+--
+-- Usage example:
+--
+-- @
+-- data Coords2D = Coords2D {_x :: Int, _y :: Int}
+--
+-- preX :: PreLens' r Coords2D Int
+-- preX = (\\s b -> s{_x = b}) ``preLens`` _x
+-- @
+preLens :: (s -> b -> t) -> (s -> a) -> PreLens r s t a b
+preLens setter getter = flip setter ~$~ getter
+{-# INLINE preLens #-}
+
+-- | Flipped version of 'preLens' that takes getter first and setter second.
+--
+-- @
+-- data Coords2D = Coords2D {_x :: Int, _y :: Int}
+--
+-- preX :: PreLens' r Coords2D Int
+-- preX = _x ``preLens'`` \\s b -> s{_x = b}
+-- @
+preLens' :: (s -> a) -> (s -> b -> t) -> PreLens r s t a b
+preLens' = flip preLens
+{-# INLINE preLens' #-}
+
+-- }}} PreLens ----------------------------------------------------------------
+-- {{{ PrePrism ---------------------------------------------------------------
+
+-- | Constract a 'PrePrism'; this function is similar to /Prism/ constructor
+-- function from /lens/ package:
+--
+-- @
+-- prism :: (b -> t) -> (s -> 'Either' t a) -> Prism s t a b
+-- @
+--
+-- Usage example:
+--
+-- @
+-- {-\# LANGUAGE LambdaCase \#-}
+-- data Sum a b = A a | B b
+--
+-- preA :: 'PrePrism' r (Sum a c) (Sum b c) a b
+-- preA = 'prePrism' A '$' \\case
+--     A a -> 'Right' a
+--     B b -> 'Left' (B b)
+-- @
+prePrism :: (b -> t) -> (s -> Either t a) -> PrePrism r s t a b
+prePrism = inbetween
+{-# INLINE prePrism #-}
+
+-- | Simplified construction of 'PrePrism', which can be used in following
+-- situations:
+--
+-- * Constructing /Prism/ for types isomorphic to 'Maybe' or
+--
+-- * when using 'Data.Typeable.cast' operation, or similar, which either
+--   returns what you want or 'Data.Maybe.Nothing'.
+--
+-- Alternative type signature of this function is also:
+--
+-- @
+-- 'prePrism'' :: 'PreIso' r s s ('Maybe' a) b -> 'PrePrism' r s s a b
+-- @
+prePrism' :: (b -> s) -> (s -> Maybe a) -> PrePrism r s s a b
+prePrism' ana cata = ana ~$~ \s -> maybe (Left s) Right (cata s)
+{-# INLINE prePrism' #-}
+
+-- | Convert 'PreIso' in to 'PreLens' by injecting const to a setter function.
+--
+-- @
+-- 'preIsoToPreLens' aPreIso f = aPreIso '$' \\fbt fsa -> 'const' fbt \`f\` fsa
+-- @
+preIsoToPreLens :: PreIso r s t a b -> PreLens r s t a b
+preIsoToPreLens aPreIso f = aPreIso $ \fbt fsa -> (const . fbt) `f` fsa
+{-# INLINE preIsoToPreLens #-}
+
+-- }}} PrePrism ---------------------------------------------------------------
 -- }}} In-Between Function Application Combinator -----------------------------
