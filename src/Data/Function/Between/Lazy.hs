@@ -96,6 +96,7 @@ module Data.Function.Between.Lazy
     , preLens
     , preLens'
     , preIsoToPreLens
+    , le
 
     -- ** PrePrism
     , PrePrism
@@ -668,6 +669,13 @@ preLens setter getter = flip setter ~$~ getter
 preLens' :: (s -> a) -> (s -> b -> t) -> PreLens r s t a b
 preLens' = flip preLens
 {-# INLINE preLens' #-}
+
+-- | Construct a @Lens@ out of a @PreLens@.
+le  :: Functor f
+    => PreLens ((a -> f b) -> s -> f t) s t a b
+    -> (a -> f b) -> s -> f t
+le = ($ ((<^@~) . flip))
+{-# INLINE le #-}
 
 -- }}} PreLens ----------------------------------------------------------------
 -- {{{ PrePrism ---------------------------------------------------------------
