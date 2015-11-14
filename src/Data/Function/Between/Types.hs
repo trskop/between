@@ -86,7 +86,7 @@ type PreLens' r s a = PreLens r s s a a
 -- @
 --
 -- How do we create something that can extrat that information from a sum type,
--- and, if necessary, also reconstructs that sum type. The answer is /Prism/,
+-- and if necessary, also reconstructs that sum type. The answer is /Prism/,
 -- which is defined as an isomorphism between that type @s@ and @'Either' t a@
 -- where @a@ is the information we want to extract and @t@ is the rest that we
 -- don't care about.

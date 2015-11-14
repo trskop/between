@@ -568,7 +568,7 @@ infix 8 ~$$~
 -- Function 'inbetween' can be redefined in terms of 'withIn' as:
 --
 -- @
--- a ``inbetween`` b = 'withIn' 'Data.Function.$' \\f -> a \`f\` b
+-- a \``inbetween`\` b = 'withIn' 'Data.Function.$' \\f -> a \`f\` b
 -- @
 --
 -- On one hand you can think of this function as a specialized 'id' function
@@ -678,7 +678,7 @@ withReIn f g = withIn f $! flip $! g
 -- data Foo a = Foo a
 --
 -- preFoo :: 'PreIso' r (Foo a) (Foo b) a b
--- preFoo = Foo ``preIso`` \\(Foo a) -> a
+-- preFoo = Foo \``preIso`\` \\(Foo a) -> a
 -- @
 preIso :: (s -> a) -> (b -> t) -> PreIso r s t a b
 preIso = (~$$~)
@@ -692,7 +692,7 @@ preIso = (~$$~)
 -- data Foo a = Foo {_getFoo :: a}
 --
 -- preFoo :: 'PreIso' r (Foo a) (Foo b) a b
--- preFoo = _getFoo ``preIso'`` Foo
+-- preFoo = _getFoo \``preIso'`\` Foo
 -- @
 preIso' :: (b -> t) -> (s -> a) -> PreIso r s t a b
 preIso' = inbetween
@@ -714,7 +714,7 @@ preIso' = inbetween
 -- data Coords2D = Coords2D {_x :: Int, _y :: Int}
 --
 -- preX :: PreLens' r Coords2D Int
--- preX = (\\s b -> s{_x = b}) ``preLens`` _x
+-- preX = (\\s b -> s{_x = b}) \``preLens`\` _x
 -- @
 preLens :: (s -> b -> t) -> (s -> a) -> PreLens r s t a b
 preLens setter getter = (flip $! setter) ~$~ getter
@@ -726,13 +726,23 @@ preLens setter getter = (flip $! setter) ~$~ getter
 -- data Coords2D = Coords2D {_x :: Int, _y :: Int}
 --
 -- preX :: PreLens' r Coords2D Int
--- preX = _x ``preLens'`` \\s b -> s{_x = b}
+-- preX = _x \``preLens'`\` \\s b -> s{_x = b}
 -- @
 preLens' :: (s -> a) -> (s -> b -> t) -> PreLens r s t a b
 preLens' = flip $! preLens
 {-# INLINE preLens' #-}
 
--- | Construct a @Lens@ out of a @PreLens@.
+-- | Construct a @Lens@ out of a 'PreLens'.
+--
+-- @
+-- data Coords2D = Coords2D {_x :: Int, _y :: Int}
+--
+-- preX :: PreLens' r Coords2D Int
+-- preX = _x \``preLens'`\` \\s b -> s{_x = b}
+--
+-- x :: Lens' Coords2D Int
+-- x = 'le' preX
+-- @
 le  :: Functor f
     => PreLens ((a -> f b) -> s -> f t) s t a b
     -> (a -> f b) -> s -> f t
