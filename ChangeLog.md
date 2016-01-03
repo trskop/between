@@ -16,6 +16,7 @@
     * `type PreLens' r s a = PreLens r s s a a`
     * `type PrePrism r s t a b = ((b -> t) -> (s -> Either t a) -> r) -> r`
     * `type PrePrism' r s a = PrePrism r s s a a`
+* Uploaded to Hackage: http://hackage.haskell.org/package/between-0.11.0.0
 
 
 ## Version 0.10.0.0
