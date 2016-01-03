@@ -57,6 +57,12 @@ Building Options
   Pass additional warning flags to GHC.
 
 
+License
+-------
+
+The BSD 3-Clause License, see [LICENSE][] file for details.
+
+
 Contributions
 -------------
 
@@ -76,3 +82,6 @@ that).
 [tl;dr Legal: BSD3]:
   https://tldrlegal.com/license/bsd-3-clause-license-%28revised%29
   "BSD 3-Clause License (Revised)"
+[LICENSE]:
+  https://github.com/trskop/between/blob/master/LICENSE
+  "License of between package."
