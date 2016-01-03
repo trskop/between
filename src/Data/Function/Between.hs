@@ -3,7 +3,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Function combinator "between" and its variations.
--- Copyright:    (c) 2013-2015, Peter Trško
+-- Copyright:    (c) 2013-2016, Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -413,7 +413,7 @@ import Data.Function.Between.Lazy
 --
 -- We can choose even stronger constraints then 'Functor', in example
 -- 'Control.Applicative.Applicative', then we get a @Traversal@, and, of
--- course, it doesn't end with it, there is a lot more to choose from.
+-- course, it doesn't end with it, since there is a lot more to choose from.
 --
 -- What is important, in the above /lens/ pattern, is that it's a function that
 -- can be composed using function composition ('.') operator (remember that
@@ -502,7 +502,7 @@ import Data.Function.Between.Lazy
 
 -- $precursorsToIsoLensAndPrism
 --
--- When it comes to standard data types, then, at the hart of every @Iso@,
+-- When it comes to standard data types, then at the hart of every @Iso@,
 -- @Lens@ and @Prism@, lies a simple trick. A hole is inserted between getter
 -- (i.e. destructor) function and setter (i.e. constructor) function.
 -- Difference between various constructs in e.g.
@@ -570,7 +570,7 @@ import Data.Function.Between.Lazy
 -- preX = _x '~$$~' \\b s -> s{_x = b}
 -- @
 --
--- We call such function a 'PreLens', since it is actually a precursors to a
+-- We call such function a 'PreLens', since it is actually a precursor to a
 -- 'Lens'.
 --
 -- @
@@ -593,10 +593,11 @@ import Data.Function.Between.Lazy
 -- preX :: 'PreLens'' (Lens' Coords2D Int) Coords2D Int
 -- @
 --
--- Function @preX@ is takes a /lens/ smart constructor regardles of what /lens/
--- kind. It can be /Laarhoven Lens/, /Store Comonad-coalgebra/ or any other
--- representation. It can also take a function that gets either getter or
--- setter, or even a function that combines those functions with others.
+-- Function @preX@ takes a /lens/ smart constructor, regardles of what /lens/
+-- kind that constructor produces. It can be /Laarhoven Lens/, /Store
+-- Comonad-coalgebra/ or any other representation. As a special case it can
+-- also take a function that gets either getter or setter, or even a function
+-- that combines those functions with others.
 --
 -- This trick of putting a hole between constructor (anamorphism) and
 -- destructor (catamorphism) is also the reason why Laarhoven's Lenses can be
