@@ -293,7 +293,7 @@ infix 8 <~@~>
 g <~@@~> f = fmap f `between` fmap g
 infix 8 <~@@~>
 
--- | Apply fmap to first argument of '~@~'. Dual to '~@~>' which applies
+-- | Apply 'fmap' to first argument of '~@~'. Dual to '~@~>' which applies
 -- 'fmap' to second argument.
 --
 -- Defined as:
@@ -332,7 +332,7 @@ infixl 8 <~@~
 g ~@@~> f = f <~@~ g
 infixr 8 ~@@~>
 
--- | Apply fmap to second argument of '~@~'. Dual to '<~@~' which applies
+-- | Apply 'fmap' to second argument of '~@~'. Dual to '<~@~' which applies
 -- 'fmap' to first argument.
 --
 -- Defined as:
