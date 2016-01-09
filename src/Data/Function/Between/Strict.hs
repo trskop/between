@@ -680,6 +680,8 @@ withReIn f g = withIn f $! flip $! g
 -- preFoo :: 'PreIso' r (Foo a) (Foo b) a b
 -- preFoo = Foo \``preIso`\` \\(Foo a) -> a
 -- @
+--
+-- /Since version 0.11.0.0./
 preIso :: (s -> a) -> (b -> t) -> PreIso r s t a b
 preIso = (~$$~)
 {-# INLINE preIso #-}
@@ -694,6 +696,8 @@ preIso = (~$$~)
 -- preFoo :: 'PreIso' r (Foo a) (Foo b) a b
 -- preFoo = _getFoo \``preIso'`\` Foo
 -- @
+--
+-- /Since version 0.11.0.0./
 preIso' :: (b -> t) -> (s -> a) -> PreIso r s t a b
 preIso' = inbetween
 {-# INLINE preIso' #-}
@@ -716,6 +720,8 @@ preIso' = inbetween
 -- preX :: PreLens' r Coords2D Int
 -- preX = (\\s b -> s{_x = b}) \``preLens`\` _x
 -- @
+--
+-- /Since version 0.11.0.0./
 preLens :: (s -> b -> t) -> (s -> a) -> PreLens r s t a b
 preLens setter getter = (flip $! setter) ~$~ getter
 {-# INLINE preLens #-}
@@ -728,6 +734,8 @@ preLens setter getter = (flip $! setter) ~$~ getter
 -- preX :: PreLens' r Coords2D Int
 -- preX = _x \``preLens'`\` \\s b -> s{_x = b}
 -- @
+--
+-- /Since version 0.11.0.0./
 preLens' :: (s -> a) -> (s -> b -> t) -> PreLens r s t a b
 preLens' = flip $! preLens
 {-# INLINE preLens' #-}
@@ -743,6 +751,8 @@ preLens' = flip $! preLens
 -- x :: Lens' Coords2D Int
 -- x = 'le' preX
 -- @
+--
+-- /Since version 0.11.0.0./
 le  :: Functor f
     => PreLens ((a -> f b) -> s -> f t) s t a b
     -> (a -> f b) -> s -> f t
@@ -770,6 +780,8 @@ le = ($! ((<^@~) . flip))
 --     A a -> 'Right' a
 --     B b -> 'Left' (B b)
 -- @
+--
+-- /Since version 0.11.0.0./
 prePrism :: (b -> t) -> (s -> Either t a) -> PrePrism r s t a b
 prePrism = inbetween
 {-# INLINE prePrism #-}
@@ -787,6 +799,8 @@ prePrism = inbetween
 -- @
 -- 'prePrism'' :: 'PreIso' r s s ('Maybe' a) b -> 'PrePrism' r s s a b
 -- @
+--
+-- /Since version 0.11.0.0./
 prePrism' :: (b -> s) -> (s -> Maybe a) -> PrePrism r s s a b
 prePrism' ana cata = ana ~$~ \s -> (maybe $! (Left $! s)) Right $! (cata $! s)
 {-# INLINE prePrism' #-}
@@ -796,6 +810,8 @@ prePrism' ana cata = ana ~$~ \s -> (maybe $! (Left $! s)) Right $! (cata $! s)
 -- @
 -- 'preIsoToPreLens' aPreIso f = aPreIso '$' \\fbt fsa -> 'const' fbt \`f\` fsa
 -- @
+--
+-- /Since version 0.11.0.0./
 preIsoToPreLens :: PreIso r s t a b -> PreLens r s t a b
 -- :: (((b -> t) -> (s -> a) -> r) -> r)
 -- -> ((b -> s -> t) -> (s -> a) -> r) -> r
