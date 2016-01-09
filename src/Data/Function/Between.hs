@@ -16,15 +16,17 @@
 -- overkill for some purposes.
 --
 -- This library describes simple and composable combinators that are built on
--- top of very basic concept:
+-- top of few very basic concepts. First one is:
 --
--- @f . h . g@
+-- @\\h -> f . h . g@
 --
--- Where @f@ and @g@ are fixed. It is possible to reduce it to just:
+-- Where @f@ and @g@ are fixed and @h@ is a free variable. It is possible to
+-- reduce it to just:
 --
 -- @(f .) . (. g)@
 --
--- Which is the core pattern used by all functions defined in this module.
+-- Which is one of the core pattern used by all related functions defined in
+-- this module.
 --
 -- Trying to generalize this pattern further ends as
 -- @(f 'Data.Functor.<$>') '.' ('Data.Functor.<$>' g)@, where
@@ -39,7 +41,32 @@
 --
 -- Which doesn't give us much more power. Instead of going for such
 -- generalization we kept the original @((f .) . (. g))@ which we named
--- 'between' or '~@~' in its infix form.
+-- 'between' or '~@~' in its infix form. There are other possible
+-- generalizations possible, in example by using 'Control.Category..' from
+-- "Control.Category" or by using composition from @Semigroupoid@ class, but
+-- that requires dependency on
+-- <https://hackage.haskell.org/package/semigroups semigroupoids> package.
+--
+-- Second concept\/pattern exploited in this package is infix function
+-- application with two arguments:
+--
+-- @
+-- \\(<>) -> a <> b
+-- @
+--
+-- Where @a@ and @b@ are fixed and @<>@ is a free variable. This library
+-- defines 'inbetween' operator (also called '~$~', in its infix form) that
+-- embodies mentioned pattern:
+--
+-- @
+-- 'inbetween' :: a -> b -> (a -> b -> r) -> r
+-- 'inbetween' a b f = a ``f`` b
+-- @
+--
+-- @
+-- ('~$~') :: a -> b -> (a -> b -> r) -> r
+-- (a '~$~' b) (<>) = a <> b
+-- @
 module Data.Function.Between
     (
     -- | This module reexports "Data.Function.Between.Lazy" that uses standard
