@@ -549,12 +549,12 @@ import Data.Function.Between.Lazy
 --     setter s b = s{_x = b}
 -- @
 --
--- As we can see, in the above example, there is a function function inserted
--- in between @getter@ and @setter@ functions. That function contains an
--- unknown function @f@.
+-- As we can see, in the above example, there is a function inserted
+-- between @getter@ and @setter@. That function contains an unknown @f@, which
+-- is also a function.
 --
--- If we gather all the code in between @getter@ and @setter@ functions and put
--- in to one place, then we would get:
+-- If we gather all the code in between the @getter@ and @setter@ functions,
+-- and put in to one place, then we get:
 --
 -- @
 -- x :: Lens' Coords2D Int
@@ -566,10 +566,11 @@ import Data.Function.Between.Lazy
 -- @
 --
 -- Now we can see that the original hole (function @f@) has moved little bit
--- further down and is now called @h@. Function @f@ now is a /Lens/ smart
+-- further down and is now called @h@. Function @f@ is now a /Lens/ smart
 -- constructor that takes getter and setter and creates a /Lens/. This leads us
--- to a question. What would happen if we won't specialize @f@, at all, and
--- leave it to a user to decide what it should be? This is what we would get:
+-- to a certain question. What would happen if we won't specialize @f@, at all,
+-- and leave it to a user to decide what it should be? This is what we would
+-- get:
 --
 -- @
 -- preX :: ((Coords2D -> Int) -> (Coords2D -> Int -> Coords2D) -> r) -> r
