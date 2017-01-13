@@ -12,7 +12,7 @@ description:
   This library not only defines @~\@~@ combinator, but also some derived
   combinators that can help us easily define a lot of things including
   lenses. See <http://hackage.haskell.org/package/lens lens package> for
-  detais on what lenses are.
+  details on what lenses are.
   .
   Function @Data.Function.on@ can be implemented using @~\@~@ as:
   .
