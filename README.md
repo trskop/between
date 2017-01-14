@@ -32,7 +32,7 @@ on :: (b -> b -> c) -> (a -> b) -> a -> a -> c
 on f g = (id ~@~ g ~@~ g) f
 ````
 
-If function @on3@ existed in /base/ then it could be defined as:
+If function 'on3' existed in *base* then it could be defined as:
 
 ````Haskell
 on3 :: (b -> b -> b -> d) -> (a -> b) -> a -> a -> a -> d
