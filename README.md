@@ -14,9 +14,9 @@ Description
 
 It turns out that this combinator
 
-````Haskell
+```Haskell
 f ~@~ g = (f .) . (. g)
-````
+```
 
 is a powerful thing. It was abstracted from following (commonly used)
 pattern `f . h . g` where `f` and `g` are fixed.
@@ -27,17 +27,17 @@ lenses. See [lens package][Hackage: lens] for details on what lenses are.
 
 Function `Data.Function.on` can be implemented using `~@~` as:
 
-````Haskell
+```Haskell
 on :: (b -> b -> c) -> (a -> b) -> a -> a -> c
 on f g = (id ~@~ g ~@~ g) f
-````
+```
 
 If function 'on3' existed in *base* then it could be defined as:
 
-````Haskell
+```Haskell
 on3 :: (b -> b -> b -> d) -> (a -> b) -> a -> a -> a -> d
 on3 f g = (id ~@~ g ~@~ g ~@~ g) f
-````
+```
 
 For more examples see documentation.
 
@@ -72,16 +72,8 @@ that).
 
 
 
-[Hackage: between]:
-    https://hackage.haskell.org/package/between
-[Hackage: lens]:
-    http://hackage.haskell.org/package/lens
-[Haskell.org]:
-  http://www.haskell.org
-  "The Haskell Programming Language"
-[tl;dr Legal: BSD3]:
-  https://tldrlegal.com/license/bsd-3-clause-license-%28revised%29
-  "BSD 3-Clause License (Revised)"
-[LICENSE]:
-  https://github.com/trskop/between/blob/master/LICENSE
-  "License of between package."
+[Hackage: between]: https://hackage.haskell.org/package/between
+[Hackage: lens]: http://hackage.haskell.org/package/lens
+[Haskell.org]: http://www.haskell.org "The Haskell Programming Language"
+[tl;dr Legal: BSD3]: https://tldrlegal.com/license/bsd-3-clause-license-%28revised%29 "BSD 3-Clause License (Revised)"
+[LICENSE]: https://github.com/trskop/between/blob/master/LICENSE "License of between package."
