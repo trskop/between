@@ -3,7 +3,7 @@
 -- |
 -- Module:       $HEADER$
 -- Description:  Function combinator "between" and its variations.
--- Copyright:    (c) 2013-2016, Peter Trško
+-- Copyright:    (c) 2013-2016, 2018 Peter Trško
 -- License:      BSD3
 --
 -- Maintainer:   peter.trsko@gmail.com
@@ -42,7 +42,7 @@
 -- Which doesn't give us much more power. Instead of going for such
 -- generalization we kept the original @((f .) . (. g))@ which we named
 -- 'between' or '~@~' in its infix form. There are other possible
--- generalizations possible, in example by using 'Control.Category..' from
+-- generalizations, in example by using 'Control.Category..' from
 -- "Control.Category" or by using composition from @Semigroupoid@ class, but
 -- that requires dependency on
 -- <https://hackage.haskell.org/package/semigroups semigroupoids> package.
@@ -126,7 +126,7 @@ import Data.Function.Between.Lazy
 --
 -- @
 -- (f '~@~' funOnY) '~@~' funOnX
---     === \g x y -> f (g (funOnX x) (funOnY y))
+--     === \\g x y -> f (g (funOnX x) (funOnY y))
 -- @
 --
 -- As you can se above @g@ is a function that takes two parameters. Now we can
@@ -138,7 +138,7 @@ import Data.Function.Between.Lazy
 -- @
 -- on :: (b -> b -> c) -> (a -> b) -> a -> a -> c
 -- on f g = ('Data.Function.id' '~@~' g '~@~' g) f
---     -- or: ((. g) ~@~ g) f
+--     -- or: ((. g) '~@~' g) f
 -- @
 --
 -- We can also define function @on3@ that takes function with arity three as
@@ -347,14 +347,14 @@ import Data.Function.Between.Lazy
 --
 -- @
 -- x :: 'Data.Functor.Functor' f => (a -> f b) -> D a c -> f (D b c)
--- x = _x '~@@^>' \s b -> s{_x = b}
+-- x = _x '~@@^>' \\s b -> s{_x = b}
 -- @
 --
 -- Alternative definitions:
 --
 -- @
 -- x = (\\s b -> s{_x = b}) '<^@~' _x
--- x f s = (_x '~@@~>' \b -> s{_x = b}) f s
+-- x f s = (_x '~@@~>' \\b -> s{_x = b}) f s
 -- x f s = ((\\b -> s{_x = b}) '<~@~' _x) f s
 -- x f s = ('Data.Function.const' _x '^@@^>' \\s' b -> s'{_x = b}) f s s
 -- x f s = ((\\s' b -> s'{_x = b}) '<^@^' 'Data.Function.const' _x) f s s
@@ -364,7 +364,7 @@ import Data.Function.Between.Lazy
 --
 -- @
 -- y :: 'Data.Functor.Functor' f => (a -> f b) -> D c a -> f (D c b)
--- y = _y '~@@^>' \s b -> s{_y = b}
+-- y = _y '~@@^>' \\s b -> s{_y = b}
 -- @
 --
 -- Above example shows us that we are able to define function equivalent to
